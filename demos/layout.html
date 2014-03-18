@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Title</title>
+<link rel="icon" href="/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+<!-- <link rel="shortcut icon" href="./favicon.ico" /> -->
+<!-- <link rel="stylesheet" href="FF.css" /> -->
+<style type="text/css" media="all">
+* {
+    padding:0;
+    margin:0;
+    //box-sizing:border-box;
+    //-moz-box-sizing:border-box;
+}
+html, body{overflow:hidden;}
+.clearfix:before, .clearfix:after{content:"";display:table;}
+.clearfix:after{clear:both;overflow:hidden;}
+.clearfix{*zoom:1;}
+.layout-middle-container {height:200px;}
+.layout-middle-container .layout-west, .layout-middle-container .bar-west{float:left;}
+.layout-middle-container .layout-east, .layout-middle-container .bar-east{float:right;}
+.layout-west, .layout-east, .layout-center{overflow:auto;}
+.resize-bar{background:#cecece;overflow:hidden;cursor:n-resize;text-align:center;}
+.bar-west, .bar-east{cursor:e-resize;}
+.layout-middle-container>div{height:100%;}
+.resize-bar span{background:#666;height:100%;width:21px;display:block;overflow:hidden;margin:auto;cursor:pointer;}
+.bar-west, .bar-east {/*display:table;*/vertical-align:middle;line-height:100%;}
+.bar-west span, .bar-east span{/*display:table-cell;*/vertical-align:middle;width:100%;height:21px;display:inline-block;}
+
+.layout-south, .layout-north{height:25px;}
+.layout-west, .layout-east{width:180px;}
+</style>
+</head>
+<body>
+<div id="page">
+    <div class="layout-north">north</div>
+    <div class="resize-bar bar-north"><span></span></div>
+    <div class="layout-middle-container clearfix">
+        <div class="layout-west">west</div>
+        <div class="resize-bar bar-west"><span></span></div>
+        <div class="layout-east">east</div>
+        <div class="resize-bar bar-east"><span></span></div>
+        <div class="layout-center">
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+            center<br /> center<br /> center<br /> center<br /> center<br /> center<br /> center<br />
+        </div>
+    </div>
+    <div class="resize-bar bar-south"><span></span></div>
+    <div class="layout-south">south</div>
+</div><!-- #page end! -->
+<script type="text/javascript" src="../jquery.min.js"></script>
+<script type="text/javascript" src="../js/jquery.layout.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+"use strict";
+var m_layout = $('#page').layout({
+    resize : true,
+    panelToggle : true,
+    panelResize : true,
+    panelBarWidth: 4
+});
+</script>
+</body>
+</html>

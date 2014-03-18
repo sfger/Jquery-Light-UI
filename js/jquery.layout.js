@@ -1,0 +1,162 @@
+(function($){
+"use strict";
+$.fn.layout=function(options){
+    options = $.extend(true,{}, options||{});
+    var handler = (function(){
+        var handler = function(box, options){
+            return new handler.prototype.init(box, options);
+        };
+        handler.prototype = {
+            init: function(box, options){
+                options = $.extend(true, {panelBarWidth:6, panelResize:false, panelToggle:true, resize:true}, options);
+                this.box = box.get(0);
+                this.userOptions = options;
+                var that = this;
+                this.someUsefullMethod();
+
+                this.panels = {
+                    north: box.find('.layout-north').get(0),
+                    south: box.find('.layout-south').get(0),
+                    west: box.find('.layout-west').get(0),
+                    east: box.find('.layout-east').get(0),
+                    center: box.find('.layout-center').get(0)
+                };
+                this.panelBars = {
+                    north: box.find('.bar-north').get(0),
+                    south: box.find('.bar-south').get(0),
+                    west: box.find('.bar-west').get(0),
+                    east: box.find('.bar-east').get(0)
+                };
+                $('.bar-south, .bar-north').css({height:options.panelBarWidth});
+                if(options.panelResize) this.panelResize();
+                if(options.panelToggle) this.panelToggle();
+                if(options.resize) $(window).resize(function(){that.resize()});
+                this.resize();
+            },
+            someUsefullMethod: function(){
+                var that = this;
+                $(['Height', 'Width']).each(function(i, one){
+                    that['getView'+one] = (function () {
+                        var container = "BackCompat" === document.compatMode ? document.body : document.documentElement;
+                        return function () {
+                            return container['client'+one];
+                        };
+                    }());
+                });
+                $(['Height', 'Width']).each(function(i, one){
+                    that['getElement'+one] = function (e) {
+                        if(!e || e.style.display==='none') return 0;
+                        return e['offset'+one];
+                    };
+                });
+            },
+            panelResize: function(){
+                var box = this.box,
+                    that = this;
+                $('.resize-bar').on({
+                    'mousedown': function(e){
+                        if(e.target.nodeName=="SPAN") return false;
+                        var bar = this;
+                        var $cover = box.cover ? $(box.cover).show() : $('<div></div>').appendTo(document.body);
+                        box.cover = $cover.get(0);
+                        $cover.css({
+                            position:'absolute',
+                            opacity: 0.1,
+                            'filter':'alpha(opacity=10)',
+                            background:'white',
+                            zIndex:50,
+                            top:0,
+                            left:0,
+                            width: that.getViewWidth(),
+                            height: that.getViewHeight()
+                        });
+                        var $proxy = this.proxy ? $(this.proxy).show() : $(this).clone().html('').appendTo(document.body);
+                        this.proxy = $proxy.get(0);
+                        $proxy.css({
+                            position:'absolute',
+                            opacity:0.5,
+                            'filter':'alpha(opacity=50)',
+                            zIndex: 100,
+                            width: this.offsetWidth,
+                            height: this.offsetHeight,
+                            top:$(this).position().top,
+                            left:$(this).position().left,
+                            background:'black'
+                        });
+                        var document_events = {
+                            'mousemove': function(e){
+                                if(window.getSelection){
+                                    window.getSelection().removeAllRanges();
+                                }else if(document.selection){
+                                    document.selection.empty();
+                                }
+                                if($proxy.hasClass('bar-east') || $proxy.hasClass('bar-west')) $proxy.css({left:e.pageX});
+                                else $proxy.css({top:e.pageY});
+                            },
+                            'mouseup': function(e){
+                                $([bar.proxy, box.cover]).hide();
+                                var $bar = $(bar);
+                                var resize_box = $bar.hasClass('bar-south') ? $bar.next() : $bar.prev();
+                                var x = e.pageX, y = e.pageY;
+                                var pbw = options.panelBarWidth;
+                                if($bar.hasClass('bar-west')) resize_box.css({width:x});
+                                else if($bar.hasClass('bar-east')) resize_box.css({width:that.getViewWidth()-x-pbw});
+                                else if($bar.hasClass('bar-north')) resize_box.css({height:y});
+                                else if($bar.hasClass('bar-south')) resize_box.css({height:that.getViewHeight()-y-pbw});
+                                $(document).off('mousemove', document_events.mousemove);
+                                $(document).off('mouseup', document_events.mouseup);
+                                that.resize();
+                            }
+                        };
+                        $(document).on(document_events);
+                    }
+                });
+            },
+            panelToggle: function(){
+                var that = this;
+                $('.resize-bar span', this.box).click(function(e){
+                    var $bar = $(this).parent();
+                    var toogle_box = $bar.hasClass('bar-south') ? $bar.next() : $bar.prev();
+                    toogle_box.toggle();
+                    that.resize();
+                    e.stopPropagation();
+                    e.preventDefault();
+                    return false;
+                });
+            },
+            resize: function(){
+                var getElementHeight = this.getElementHeight;
+                var panelBarWidth = this.userOptions.panelBarWidth;
+                var panels = this.panels;
+                var panelBars = this.panelBars;
+                var md_container_height = this.getViewHeight()
+                    - getElementHeight(panels.north)
+                    - getElementHeight(panels.south)
+                    - getElementHeight(panelBars.north)
+                    - getElementHeight(panelBars.south);
+                $('.layout-middle-container', this.box).height(md_container_height)
+                    .find('.resize-bar').css({lineHeight:md_container_height+'px'});
+                var doc_mode = document.documentMode;
+                // if(doc_mode<=8 || /MSIE 7/.test(navigator.userAgent) || /MSIE 6/.test(navigator.userAgent)){
+                    $('.layout-middle-container .resize-bar', this.box).css({position:'relative', width:panelBarWidth})
+                        .find('span').css({position:'absolute', top:md_container_height/2-10, left:0});
+                // }
+                if(doc_mode===5 || /MSIE 6/.test(navigator.userAgent)){
+                    var getElementWidth = this.getElementWidth;
+                    var center_width = this.getViewWidth()
+                        - getElementWidth(panels.west)
+                        - getElementWidth(panels.east)
+                        - getElementWidth(panelBars.west)
+                        - getElementWidth(panelBars.east);
+                    $('.layout-center', this.box).css({float:'left', width:center_width, height:md_container_height});
+                    $('.layout-middle-container>div', this.box).height(md_container_height);
+                }
+            }
+        };
+        handler.prototype.init.prototype = handler.prototype;
+        return handler;
+    })();
+ 
+    return handler(this, options);
+};
+})(jQuery);
