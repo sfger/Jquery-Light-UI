@@ -122,11 +122,12 @@ $.fn.layout=function(options){
 							'mouseup': function(e){
 								$([bar.proxy, box.cover]).hide();
 								var x = e.pageX, y = e.pageY;
-								var barOps = options.panelBar.each;
+								var barSize = that.userOptions.panelBar.size;
+								var barOps = that.userOptions.panelBar.each;
 								if($bar.hasClass('bar-west')) resize_box.css({width:x});
-								else if($bar.hasClass('bar-east')) resize_box.css({width:that.getViewWidth()-x-barOps.east.width});
+								else if($bar.hasClass('bar-east')) resize_box.css({width:that.getViewWidth()-x-(barOps.east.width||barSize)});
 								else if($bar.hasClass('bar-north')) resize_box.css({height:y});
-								else if($bar.hasClass('bar-south')) resize_box.css({height:that.getViewHeight()-y-barOps.south.height});
+								else if($bar.hasClass('bar-south')) resize_box.css({height:that.getViewHeight()-y-(barOps.south.height||barSize)});
 								if(!resize_box.get(0).offsetHeight || !resize_box.get(0).offsetWidth){
 									resize_box.hide();
 									$bar.get(0).style.cursor = 'auto';
