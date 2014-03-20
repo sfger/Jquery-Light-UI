@@ -27,7 +27,7 @@ html, body{overflow:hidden;}
 .resize-bar{background:#cecece;overflow:hidden;cursor:n-resize;text-align:center;}
 .bar-west, .bar-east{cursor:e-resize;}
 .layout-middle-container>div{height:100%;}
-.resize-bar span{background:#666;height:100%;width:21px;display:block;overflow:hidden;margin:auto;cursor:pointer;}
+.resize-bar span{background:#333;height:100%;width:21px;display:block;overflow:hidden;margin:auto;cursor:pointer;}
 //.bar-west, .bar-east{display:table;vertical-align:middle;line-height:100%;}
 .bar-west span, .bar-east span{/*display:table-cell;*/width:100%;height:21px;}
 
@@ -72,30 +72,24 @@ html, body{overflow:hidden;}
 //<![CDATA[
 "use strict";
 var m_layout = $('#page').layout({
-	resize: true,
 	panel: {
 		toggle: true,
 		resize: true,
 		each:{
-			north:{
-				toggle: true,
-				resize: true
-			},
-			south:{
-				toggle: true,
-				resize: true
-			},
-			west:{
-				toggle: true,
-				resize: true
-			},
-			east:{
-				toggle: true,
-				resize: true
-			}
+			north:{ toggle: true, resize: true },
+			south:{ toggle: true, resize: true },
+			west:{ toggle: true, resize: true },
+			east:{ toggle: true, resize: true }
 		}
 	},
-	panelBarWidth: 4
+	panelBar:{
+		//size: 4,
+		each:{
+			//north: {height:2},
+			//south: {height:2},
+			//west: {width:8}
+		}
+	}
 });
 </script>
 </body>

@@ -1,7 +1,27 @@
 (function($){
 "use strict";
 $.fn.layout=function(options){
-	options = $.extend(true, {panelBarWidth:6, panelResize:false, panelToggle:true, resize:true}, options);
+	options = $.extend(true, {
+		panel: {
+			toggle:true,
+			resize:true,
+			each:{
+				north:{toggle:false,resize:false},
+				south:{toggle:false,resize:false},
+				west:{toggle:true,resize:true},
+				east:{toggle:true,resize:true}
+			}
+		},
+		panelBar: {
+			size:5,
+			each:{
+				north:{/*height:4*/},
+				south:{/*height:4*/},
+				west:{/*width:1*/},
+				east:{/*width:1*/}
+			}
+		}
+	}, options);
 	var handler = (function(){
 		var handler = function(box, options){
 			return new handler.prototype.init(box, options);
@@ -19,16 +39,15 @@ $.fn.layout=function(options){
 					center: box.find('.layout-center').get(0)
 				};
 				this.panelBars = {
-					north: box.find('.bar-north').get(0),
-					south: box.find('.bar-south').get(0),
-					west: box.find('.bar-west').get(0),
-					east: box.find('.bar-east').get(0)
+					north: box.find('.bar-north').css({height:options.panelBar.each.north.height||options.panelBar.size}).get(0),
+					south: box.find('.bar-south').css({height:options.panelBar.each.south.height||options.panelBar.size}).get(0),
+					west: box.find('.bar-west').css({width:options.panelBar.each.west.width||options.panelBar.size}).get(0),
+					east: box.find('.bar-east').css({width:options.panelBar.each.east.width||options.panelBar.size}).get(0)
 				};
-				$('.bar-south, .bar-north').css({height:options.panelBarWidth});
 				var that = this;
 				if(options.panel.resize) this.panelResize();
 				if(options.panel.toggle) this.panelToggle();
-				if(options.resize) $(window).resize(function(){that.resize()});
+				$(window).resize(function(){that.resize()});
 				this.resize();
 			},
 			someUsefullMethod: function(){
@@ -40,8 +59,6 @@ $.fn.layout=function(options){
 							return container['client'+one];
 						};
 					}());
-				});
-				$(['Height', 'Width']).each(function(i, one){
 					that['getElement'+one] = function (e) {
 						if(!e || e.style.display==='none') return 0;
 						return e['offset'+one];
@@ -75,7 +92,7 @@ $.fn.layout=function(options){
 						$cover.css({
 							position:'absolute',
 							opacity: 0.1,
-							'filter':'alpha(opacity=10)',
+							filter:'alpha(opacity=10)',
 							background:'white',
 							zIndex:50,
 							top:0,
@@ -88,10 +105,10 @@ $.fn.layout=function(options){
 						$proxy.css({
 							position:'absolute',
 							opacity:0.5,
-							'filter':'alpha(opacity=50)',
-							zIndex: 100,
-							width: this.offsetWidth,
-							height: this.offsetHeight,
+							filter:'alpha(opacity=50)',
+							zIndex:100,
+							width:this.offsetWidth,
+							height:this.offsetHeight,
 							top:$(this).position().top,
 							left:$(this).position().left,
 							background:'black'
@@ -105,11 +122,11 @@ $.fn.layout=function(options){
 							'mouseup': function(e){
 								$([bar.proxy, box.cover]).hide();
 								var x = e.pageX, y = e.pageY;
-								var pbw = options.panelBarWidth;
+								var barOps = options.panelBar.each;
 								if($bar.hasClass('bar-west')) resize_box.css({width:x});
-								else if($bar.hasClass('bar-east')) resize_box.css({width:that.getViewWidth()-x-pbw});
+								else if($bar.hasClass('bar-east')) resize_box.css({width:that.getViewWidth()-x-barOps.east.width});
 								else if($bar.hasClass('bar-north')) resize_box.css({height:y});
-								else if($bar.hasClass('bar-south')) resize_box.css({height:that.getViewHeight()-y-pbw});
+								else if($bar.hasClass('bar-south')) resize_box.css({height:that.getViewHeight()-y-barOps.south.height});
 								if(!resize_box.get(0).offsetHeight || !resize_box.get(0).offsetWidth){
 									resize_box.hide();
 									$bar.get(0).style.cursor = 'auto';
@@ -151,7 +168,6 @@ $.fn.layout=function(options){
 			},
 			resize: function(){
 				var getElementHeight = this.getElementHeight;
-				var panelBarWidth = this.userOptions.panelBarWidth;
 				var panels = this.panels;
 				var panelBars = this.panelBars;
 				var md_container_height = this.getViewHeight()
@@ -163,7 +179,7 @@ $.fn.layout=function(options){
 					.find('.resize-bar').css({lineHeight:md_container_height+'px'});
 				var doc_mode = document.documentMode;
 				// if(doc_mode<=8 || /MSIE 7/.test(navigator.userAgent) || /MSIE 6/.test(navigator.userAgent)){
-					$('.layout-middle-container .resize-bar', this.box).css({position:'relative', width:panelBarWidth})
+					$('.layout-middle-container .resize-bar', this.box).css({position:'relative'})
 						.find('span').css({position:'absolute', top:md_container_height/2-10, left:0});
 				// }
 				if(doc_mode===5 || /MSIE 6/.test(navigator.userAgent)){
