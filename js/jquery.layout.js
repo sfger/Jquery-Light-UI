@@ -30,7 +30,6 @@ $.fn.layout=function(options){
 			init: function(box, options){
 				this.box = box.get(0);
 				this.userOptions = options;
-				this.someUsefullMethod();
 				this.panels = {
 					north: box.find('.layout-north').get(0),
 					south: box.find('.layout-south').get(0),
@@ -45,13 +44,6 @@ $.fn.layout=function(options){
 					east: box.find('.bar-east').css({width:options.panelBar.each.east.width||options.panelBar.size}).get(0)
 				};
 				var that = this;
-				if(options.panel.resize) this.panelResize();
-				if(options.panel.toggle) this.panelToggle();
-				$(window).resize(function(){that.resize()});
-				this.resize();
-			},
-			someUsefullMethod: function(){
-				var that = this;
 				$(['Height', 'Width']).each(function(i, one){
 					that['getView'+one] = (function () {
 						var container = "BackCompat" === document.compatMode ? document.body : document.documentElement;
@@ -64,6 +56,10 @@ $.fn.layout=function(options){
 						return e['offset'+one];
 					};
 				});
+				if(options.panel.resize) this.panelResize();
+				if(options.panel.toggle) this.panelToggle();
+				$(window).resize(function(){that.resize()});
+				this.resize();
 			},
 			disableSelection: function(){
 				if(window.getSelection){

@@ -17,51 +17,48 @@
 .button{vertical-align:middle;font-weight:bold;color:#1e1e1e;}
 a.button{background:#eee;}
 input.button{height:25px;padding:0 8px;}
-a.button{text-decoration:none;display:inline-block;*display:inline;*zoom:1;height:18px;_height:25px;line-height:18px;padding:3px 12px 2px;font-size:12px;border-radius:3px;overflow:hidden;font-weight:bold;border:1px solid #7e7e7e;}
+a.button{text-decoration:none;display:inline-block;*display:inline;*zoom:1;height:18px;_height:25px;line-height:18px;padding:3px 12px 2px;font-size:12px;border-radius:3px;font-weight:bold;border:1px solid #7e7e7e;overflow:hidden;}
 a.button:hover{border-color:#0074bc;outline:none;}
 .button:active{position:relative;top:1px;left:1px;box-shadow:0 -11px 5px #99ccee inset;}
-.window-container{display:none;position:fixed;}
-.window-wrapper{width:400px;height:260px;overflow:hidden;position:relative;}
+.window-container{display:none;position:fixed;z-index:50;top:0;left:0;background:black;opacity:0.6;filter:alpha(opacity=60);}
+.window-wrapper{width:400px;height:260px;overflow:hidden;position:absolute;margin:auto;background:white;box-shadow:0px 5px 15px white;}
 .window-container .window-bar{background:#aaa;padding:5px 8px;text-align:right;height:27px;line-height:27px;}
 .window-container .footer{background:white;}
 .window-container .closer{transition:all 0.5s ease-out 0s;font-family:宋体;padding:3px 4px 2px;background:none;border:none;}
 .window-container .closer:hover{transform:rotate(360deg);-webkit-transform:rotate(360deg);background:none;border:none;}
-.window-container .contents{padding:2px 1px 2px 5px;overflow:auto;}
+.window-container .closer:active{box-shadow:none;}
+.window-container .contents{padding:2px 1px 2px 5px;overflow:auto;text-align:left;}
 </style>
 </head>
 <body>
 <div id="page">
     <a id="button" href="javascript:;">popup</a>
-    <div class="window-container">
-        <div class="window-wrapper clearfix">
-            <div class="window-bar header clearfix">
-                <span style="float:left">点我干啥？</span>
-                <a href="javascript:;" class="button closer">×</a>
-            </div>
-            <div class="contents">
-                a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
-                a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
-                a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
-                a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
-                a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
-                a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
-            </div>
-            <div class="window-bar footer clearfix">
-                <a href="javascript:;" class="button">确定</a>
-                <a href="javascript:;" class="button">取消</a>
-                <input type="button" class="button" value="确定">
-                <input type="button" class="button" value="取消">
-            </div>
-        </div>
-    </div>
+	<div class="my-window">
+		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
+		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
+		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
+		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
+		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
+		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
+	</div>
 </div><!-- #page end! -->
 <script type="text/javascript" src="../jquery.min.js"></script>
 <script type="text/javascript" src="../js/jquery.window.js"></script>
 <script type="text/javascript">
 //<![CDATA[
 "use strict";
+var m_window = $('.my-window').window({
+	show: true,
+	title: '点我干啥？',
+	beforeClose: function(){
+		return confirm('确定关闭窗口？');
+	},
+	onClose: function(){
+		alert('窗口已经关闭');
+	}
+});
 $('#button').on('click', function(){
-    var m_window = $('#page').window({});
+	m_window.show();
 });
 </script>
 </body>
