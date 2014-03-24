@@ -23,7 +23,7 @@ a.button:hover{border-color:#0074bc;outline:none;}
 .window-container{display:none;position:fixed;z-index:50;top:0;left:0;background:black;opacity:0.6;filter:alpha(opacity=60);}
 .window-wrapper{width:400px;height:260px;overflow:hidden;position:absolute;margin:auto;background:white;box-shadow:0px 5px 15px white;}
 .window-container .window-bar{background:#aaa;padding:5px 8px;text-align:right;height:27px;line-height:27px;}
-.window-container .footer{background:white;}
+//.window-container .footer{background:;}
 .window-container .closer{transition:all 0.5s ease-out 0s;font-family:宋体;padding:3px 4px 2px;background:none;border:none;}
 .window-container .closer:hover{transform:rotate(360deg);-webkit-transform:rotate(360deg);background:none;border:none;}
 .window-container .closer:active{box-shadow:none;}
@@ -48,13 +48,21 @@ a.button:hover{border-color:#0074bc;outline:none;}
 //<![CDATA[
 "use strict";
 var m_window = $('.my-window').window({
-	show: true,
+	//show: true,
 	title: '点我干啥？',
-	beforeClose: function(){
+	onBeforeClose: function(){
 		return confirm('确定关闭窗口？');
 	},
 	onClose: function(){
 		alert('窗口已经关闭');
+	},
+	footer:{
+		formatter: function(){
+			return '<input type="button" class="button" value="确定">' +
+				'<input type="button" class="button" value="取消">';
+				//'<a href="javascript:;" class="button">确定</a>' +
+				//'<a href="javascript:;" class="button">取消</a>';
+		}
 	}
 });
 $('#button').on('click', function(){

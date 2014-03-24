@@ -3,7 +3,8 @@
 $.fn.window=function(options){
 	options = $.extend(true, {
 		title: 'title',
-		show: false
+		show: false,
+		footer: {}
 	}, options);
 	var handler = (function(){
 		var handler = function(box, options){
@@ -18,12 +19,11 @@ $.fn.window=function(options){
 							'<a href="javascript:;" class="button closer">×</a>' +
 						'</div>' +
 						'<div class="contents"></div>' +
-						'<div class="window-bar footer clearfix">' +
-							// '<a href="javascript:;" class="button">确定</a>' +
-							// '<a href="javascript:;" class="button">取消</a>' +
-							'<input type="button" class="button" value="确定">' +
-							'<input type="button" class="button" value="取消">' +
-						'</div>' +
+						(options.footer.formatter ? (function(){
+							return '<div class="window-bar footer clearfix">' +
+								options.footer.formatter() +
+								'</div>';
+						})() : '') +
 					'</div>' +
 				'</div>' ).appendTo(document.body);
 				this.userOptions = options;
@@ -79,14 +79,15 @@ $.fn.window=function(options){
 				if(isIE6 || !css1compat){
 					$container.css({'position':'absolute', 'top':scrollTop});
 				}
+				var fix_position = function(n){ return n<0?0:n; };
 				$(wraper).css({
-					'top':(viewHeight - this.getElementHeight(wraper))/4,
-					'left':(viewWidth - this.getElementWidth(wraper))/2
+					'top':fix_position((viewHeight - this.getElementHeight(wraper))/4),
+					'left':fix_position((viewWidth - this.getElementWidth(wraper))/2)
 				});
 				$contents.css({
-					height: wraper.clientHeight
+					height: (wraper.clientHeight>viewHeight ? viewHeight : wraper.clientHeight)
 						- $('.header', wraper).get(0).offsetHeight
-						- $('.footer', wraper).get(0).offsetHeight
+						- (this.userOptions.footer.formatter ? $('.footer', wraper).get(0).offsetHeight : 0)
 						- parseInt($contents.css('paddingTop'))
 						- parseInt($contents.css('paddingBottom'))
 				});
@@ -94,21 +95,31 @@ $.fn.window=function(options){
 			},
 			resize: function(){
 				if( $(document.body).css('overflow')!=='hidden' ) return false;
-				var viewWidth  = this.getViewWidth(),
+				var viewWidth   = this.getViewWidth(),
 					viewHeight  = this.getViewHeight(),
-					wraper = this.wraper;
+					wraper      = this.wraper,
+					$contents   = $(this.contents);
 				$(this.container).css({width:viewWidth, height:viewHeight});
+				var fix_position = function(n){ return n<0?0:n; };
 				$(wraper).css({
-					left: (viewWidth - wraper.offsetWidth)/2,
-					top: (viewHeight - wraper.offsetHeight)/4
+					'top':fix_position((viewHeight - wraper.offsetHeight)/4),
+					'left':fix_position((viewWidth - wraper.offsetWidth)/2)
+				});
+				this.contents.style.height = '';
+				$contents.css({
+					height: (wraper.clientHeight>viewHeight ? viewHeight : wraper.clientHeight)
+						- $('.header', wraper).get(0).offsetHeight
+						- (this.userOptions.footer.formatter ? $('.footer', wraper).get(0).offsetHeight : 0)
+						- parseInt($contents.css('paddingTop'))
+						- parseInt($contents.css('paddingBottom'))
 				});
 				return this;
 			},
 			close: function(){
 				var options = this.userOptions;
-				if( options.beforeClose
+				if( options.onBeforeClose
 					&& typeof options.onClose==='function'
-					&& !options.beforeClose() ) return false;
+					&& !options.onBeforeClose() ) return false;
 				this.container.style.display = 'none';
 				$([document.documentElement, document.body]).css({overflow:''});
 				if(options.onClose && typeof options.onClose==='function') options.onClose();
