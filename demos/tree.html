@@ -13,7 +13,9 @@
 * {padding:0;margin:0;font-size:14px;}
 .tree-container ul, .tree-container li{overflow:auto;vertical-align:middle;}
 .tree-container ul ul{display:none;}
-.tree-container li{line-height:16px;cursor:pointer;}
+.tree-container li a{color:black;line-height:16px;display:block;}
+.tree-container li a:hover{background:#eee;}
+.tree-container li a.current{background:#ccc;}
 .tree-container .indent, .tree-container .line, .tree-container .join, .tree-container .hit, .tree-container .file, .tree-container .folder, .tree-container .title{display:inline-block;*display:inline;*zoom:1;width:16px;height:18px;line-height:18px;vertical-align:middle;overflow:hidden;}
 .tree-container .title{width:auto;padding:0 0 0 2px;}
 .tree-container .line{background:url("../img/tree_icons.png") no-repeat scroll -176px 0;}
