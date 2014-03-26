@@ -63,7 +63,7 @@ var data = [
 					{ name:'IBM-CN', url:'https://www.ibm.com/developerworks/cn/' },
 					{ name:'Soboom', url:'http://www.soboom.com/index.html' },
 					{ name:'张鑫旭', url:'http://www.zhangxinxu.com' },
-					{ name:'Sivan&#039;s Blog', url:'http://lightcss.com/' },
+					{ name:"Sivan's Blog", url:'http://lightcss.com/' },
 					{ name:'月光博客', url:'http://www.williamlong.info/' },
 					{ name:'阮一峰', url:'http://www.ruanyifeng.com/blog/', target:"_blank" },
 					{ name:'前端观察', url:'http://www.qianduan.net/' },
@@ -166,19 +166,19 @@ var data = [
 					{ name:'BitBucket', url:'https://bitbucket.org/' },
 					{
 						name: '系统软件',
-						chidren:{
-							Driver:{ name:'驱动精灵', url:'http://www.drivergenius.com' },
-							DiskGenius:{ name:'DiskGenius', url:'http://www.diskgenius.cn/' }
-						}
+						chidren:[
+							{ name:'驱动精灵', url:'http://www.drivergenius.com' },
+							{ name:'DiskGenius', url:'http://www.diskgenius.cn/' }
+						]
 					},
 					{
 						name: '版本管理',
-						chidren:{
-							Git:{ name:'Git', url:'http://msysgit.github.com/' },
-							Github:{ name:'Github', url:'http://windows.github.com/' },
-							TortoiseSVN:{ name:'TortoiseSVN', url:'http://tortoisesvn.net/' },
-							Win32SVN:{ name:'Win32SVN', url:'http://subversion.apache.org/packages.html#windows' }
-						}
+						chidren:[
+							{ name:'Git', url:'http://msysgit.github.com/' },
+							{ name:'Github', url:'http://windows.github.com/' },
+							{ name:'TortoiseSVN', url:'http://tortoisesvn.net/' },
+							{ name:'Win32SVN', url:'http://subversion.apache.org/packages.html#windows' }
+						]
 					}
 				]
 			},
@@ -318,28 +318,31 @@ $.fn.tree=function(options){
 				var createTree = function(data, deep){
 					if(!deep) deep = 1;
 					var ul = document.createElement('ul');
-					ul.setAttribute('deep', deep)
+					ul.setAttribute('deep', deep);
 					for(var i=0,ii=data.length-1; i<=ii; i++){
 						var name = document.createElement('span');
 						var li = document.createElement('li');
+						var line = document.createElement('a');
 						var lindent = data[i].chidren ? (deep==1?deep-2:deep-1) : deep;
 						for(var j=0; j<lindent; j++){
 							var span = document.createElement('span');
 							span.className = j===lindent-1 ? 'join' : 'line';
-							li.appendChild(span);
+							line.appendChild(span);
 						}
 						name.appendChild(document.createTextNode(data[i].name));
-						li.opt = data[i];
+						line.option = data[i];
 						if(data[i].chidren){
 							var hit = document.createElement('span');
 							hit.className = 'hit';
-							li.appendChild(hit);
+							line.appendChild(hit);
 						}
 						var icon = document.createElement('span');
 						icon.className = 'file';
-						li.appendChild(icon);
+						line.appendChild(icon);
 						name.className = 'title';
-						li.appendChild(name);
+						line.appendChild(name);
+						line.setAttribute('href', 'javascript:;');
+						li.appendChild(line);
 						if(data[i].chidren){
 							icon.className = 'folder';
 							li.appendChild(createTree(data[i].chidren, deep+1));
@@ -355,10 +358,15 @@ $.fn.tree=function(options){
 				this.userOptions = options;
 				this.container  = box.get(0);
 				this.contents   = w.get(0);
-				$(this.contents).delegate('li',{
+				$(this.contents).delegate('a', {
 					'click': function(e){
-						if(!that.isLeaf(this)){
-							that.toggle(this);
+						var folder = this.parentNode;
+						if(!that.isLeaf(folder)){
+							that.toggle(folder);
+						}else{
+							$(that.currentElement).removeClass('current');
+							that.currentElement = this;
+							$(this).addClass('current');
 						}
 						e.stopPropagation();
 						e.preventDefault();
@@ -368,7 +376,7 @@ $.fn.tree=function(options){
 				w.appendTo(box);
 			},
 			isLeaf: function(node){
-				return !node.opt.chidren;
+				return !node.children[0].option.chidren;
 			},
 			toggle: function(folder){
 				var method = 'hide';
