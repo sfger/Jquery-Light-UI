@@ -14,12 +14,14 @@
 .clearfix:before, .clearfix:after{content:"";display:table;}
 .clearfix:after{clear:both;overflow:hidden;}
 .clearfix{*zoom:1;}
-.tree-container ul, .tree-container li{overflow:hidden;vertical-align:middle;list-style:none;}
+.tree-container {width:auto;overflow:auto;background:white;}
+.tree-container ul {width:auto:height:auto;}
+.tree-container ul, .tree-container li{width:auto;vertical-align:middle;list-style:none;}
 .tree-container ul ul{display:none;}
-.tree-container li a{color:black;line-height:16px;display:block;white-space:nowrap;}
+.tree-container li a{color:black;line-height:16px;background:white;text-decoration:none;display:block;white-space:nowrap;}
 .tree-container li a:hover{background:#e1e1e1;}
 .tree-container li a.current{background:#d1d1d1;}
-.tree-container .indent, .tree-container .line, .tree-container .join, .tree-container .hit, .tree-container .file, .tree-container .folder, .tree-container .title{display:inline-block;*display:inline;*zoom:1;width:16px;height:18px;line-height:18px;vertical-align:middle;overflow:hidden;}
+.tree-container .indent, .tree-container .line, .tree-container .join, .tree-container .hit, .tree-container .file, .tree-container .folder, .tree-container .title{cursor:pointer;display:inline-block;*display:inline;*zoom:1;width:16px;height:18px;line-height:18px;vertical-align:middle;overflow:hidden;}
 .tree-container .title{width:auto;padding:0 0 0 2px;word-break:break-all;word-wrap:break-word;}
 .tree-container .line{background:url("../img/tree_icons.png") no-repeat scroll -176px 0;}
 .tree-container .join{background:url("../img/tree_icons.png") no-repeat scroll -192px 0;}
@@ -28,8 +30,11 @@
 .tree-container .first .hit, .tree-container .last .hit{background:url("../img/tree_icons.png") no-repeat scroll -64px 0;}
 .tree-container .last .line{background:none;}
 .tree-container .last .join{background:url("../img/tree_icons.png") no-repeat scroll -160px 0;}
-.tree-container .last.expanded .hit{background:url("../img/tree_icons.png") no-repeat scroll -80px 0;}
+//.tree-container .expanded>a>.hit{background:url("../img/tree_icons.png") no-repeat scroll -80px 0;}
+.tree-container .hit-open{background:url("../img/tree_icons.png") no-repeat scroll -80px 0;}
 .tree-container .file{background:url("../img/tree_icons.png") no-repeat scroll -240px 0;}
+
+#my_tree{height:300px;width:210px;overflow:auto;border:1px solid black;}
 </style>
 </head>
 <body>
@@ -43,7 +48,10 @@
 try {
 	document.execCommand('BackgroundImageCache', false, true);
 }catch(e){}
-$('#my_tree').tree({data:data});
+$('#my_tree').tree({
+	data: data,
+	animate: {time:115}
+});
 //]]>
 </script>
 </body>

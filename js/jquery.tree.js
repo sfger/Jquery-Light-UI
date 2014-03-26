@@ -4,11 +4,11 @@ var data = [
 	//{{{BookMark
 	{
 		name: 'Collection',
-		chidren:[
+		children:[
 			//Search{{{
 			{
 				name: '搜索、百科与词典',
-				chidren:[
+				children:[
 					{ name:'Baidu', url:'http://www.baidu.com' },
 					{ name:'SoSo', url:'http://www.soso.com' },
 					{ name:'Google', url:'https://www.google.com', target:'_blank' },
@@ -20,7 +20,7 @@ var data = [
 			//Video{{{
 			{
 				name: '视频',
-				chidren:[
+				children:[
 					{ name:'优酷', url:'http://www.youku.com' },
 					{ name:'PPS', url:'http://www.pps.tv' },
 					{ name:'土豆', url:'http://www.tudou.com/' },
@@ -33,7 +33,7 @@ var data = [
 			//WebSite{{{
 			{
 				name: '门户、新闻与社区',
-				chidren:[
+				children:[
 					{ name:'网易', url:'http://www.163.com' },
 					{ name:'新浪', url:'http://www.sina.com' },
 					{ name:'搜狐', url:'http://www.sohu.com/' },
@@ -45,7 +45,7 @@ var data = [
 			//Blog{{{
 			{
 				name: '个人博客、社区',
-				chidren:[
+				children:[
 					{ name:'博客园', url:'http://www.cnblogs.com' },
 					{ name:'大前端', url:'http://www.daqianduan.com/' },
 					{ name:'36kr', url:'http://www.36kr.com/' },
@@ -79,10 +79,10 @@ var data = [
 			//BlogNewTech{{{
 			{
 				name: '团队博客',
-				chidren:[
+				children:[
 					{
 						name: '腾讯',
-						chidren:[
+						children:[
 							{ name:'QQ客户端团队博客', url:'http://impd.tencent.com/' },
 							{ name:'腾讯Web前端 AlloyTeam', url:'http://www.alloyteam.com/' },
 							{ name:'TGideas游戏设计', url:'http://tgideas.qq.com/' },
@@ -94,7 +94,7 @@ var data = [
 					},
 					{
 						name: '淘宝',
-						chidren:[
+						children:[
 							{ name:'淘宝UED', url:'http://ued.taobao.com/' },
 							{ name:'淘宝QA', url:'http://rdc.taobao.com/blog/qa/' },
 							{ name:'淘测试', url:'http://www.taobaotest.com/' },
@@ -107,7 +107,7 @@ var data = [
 					},
 					{
 						name: '阿里巴巴',
-						chidren:[
+						children:[
 							{ name:'阿里巴巴国际站UED', url:'http://www.aliued.com/' },
 							{ name:'阿里巴巴中文站UED', url:'http://www.aliued.cn/' },
 							{ name:'阿里集团数据平台', url:'http://www.alidata.org/' }
@@ -115,7 +115,7 @@ var data = [
 					},
 					{
 						name: '支付宝',
-						chidren:[
+						children:[
 							{ name:'支付宝PED', url:'http://ped.alipay.com/' },
 							{ name:'支付宝UED', url:'http://ued.alipay.com/' },
 							{ name:'支付宝用户研究', url:'http://ued.alipay.com/ur' }
@@ -123,7 +123,7 @@ var data = [
 					},
 					{
 						name: '搜狐',
-						chidren:[
+						children:[
 							{ name:'搜狐MUED', url:'http://mued.sohu.com/' },
 							{ name:'搜狐焦点UED', url:'http://ued.focus.cn/wordpress/' },
 							{ name:'搜狐UED', url:'http://ued.sohu.com/' }
@@ -131,7 +131,7 @@ var data = [
 					},
 					{
 						name: '百度',
-						chidren:[
+						children:[
 							{ name:'百度MUX', url:'http://mux.baidu.com/' },
 							{ name:'百度UFO', url:'http://www.baiduux.com/' },
 							{ name:'百度UED', url:'http://ued.baidu.com/' }
@@ -139,7 +139,7 @@ var data = [
 					},
 					{
 						name: '新浪',
-						chidren:[
+						children:[
 							{ name:'新浪微博UDC', url:'http://udc.weibo.com/' },
 							{ name:'新浪UED', url:'http://ued.sina.com/' }
 						]
@@ -156,7 +156,7 @@ var data = [
 			//Software{{{
 			{
 				name: '软件',
-				chidren:[
+				children:[
 					{ name:'Vim', url:'http://www.vim.org' },
 					{ name:'Vim2', url:'http://vim.wendal.net/' },
 					{ name:'GIMP', url:'http://www.gimp.org' },
@@ -166,14 +166,14 @@ var data = [
 					{ name:'BitBucket', url:'https://bitbucket.org/' },
 					{
 						name: '系统软件',
-						chidren:[
+						children:[
 							{ name:'驱动精灵', url:'http://www.drivergenius.com' },
 							{ name:'DiskGenius', url:'http://www.diskgenius.cn/' }
 						]
 					},
 					{
 						name: '版本管理',
-						chidren:[
+						children:[
 							{ name:'Git', url:'http://msysgit.github.com/' },
 							{ name:'Github', url:'http://windows.github.com/' },
 							{ name:'TortoiseSVN', url:'http://tortoisesvn.net/' },
@@ -186,7 +186,7 @@ var data = [
 			//Tools{{{
 			{
 				name: '小工具',
-				chidren:[
+				children:[
 					{ name:'Emmet', url:'http://docs.emmet.io/' },
 					{ name:'Less', url:'https://github.com/groenewege/vim-less', target:'_blank' },
 					{ name:'Vim Zencoding', url:'https://github.com/mattn/zencoding-vim', target:'_blank' },
@@ -200,7 +200,7 @@ var data = [
 			//Tech{{{
 			{
 				name: 'Tech',
-				chidren:[
+				children:[
 					{ name:'SinaAppEngine', url:'http://sae.sina.com.cn/' },
 					{ name:'MSDN', url:'http://msdn.microsoft.com/en-us/library/ms683218%28VS.85%29.aspx' },
 					{ name:'Google Developers', url:'https://developers.google.com/academy/apis/commerce/?hl=zh-cn', target:'_blank' },
@@ -216,10 +216,10 @@ var data = [
 	//{{{JavaScript
 	{
 		name:'JavaScript',
-		chidren:[
+		children:[
 			{
 				name: '应用',
-				chidren: [
+				children: [
 					{ name: 'JQuery', url: 'http://jquery.com/' },
 					{ name: 'Underscore', url: 'https://github.com/documentcloud/underscore/' },
 					{ name: 'Backbone', url: 'https://github.com/documentcloud/backbone/' },
@@ -232,7 +232,7 @@ var data = [
 			},
 			{
 				name: 'Share',
-				chidren: [
+				children: [
 					{ name:'Dron', url:'http://ucren.com/blog/' },
 					{ name: 'Franky', url: 'http://www.cnblogs.com/_franky' },
 					{ name: '司徒正美', url: 'http://www.cnblogs.com/rubylouvre' },
@@ -247,16 +247,16 @@ var data = [
 	//{{{NodeJS
 	{
 		name:'NodeJS',
-		chidren:[
+		children:[
 			{
 				name: '应用',
-				chidren: [
+				children: [
 					{ name: 'Curl', url: 'https://github.com/cujojs/curl', target:"_blank" }
 				]
 			},
 			{
 				name: 'Share',
-				chidren: [
+				children: [
 					{ name: 'NodeJS官网', url: 'http://nodejs.org/' }
 				]
 			}
@@ -266,10 +266,10 @@ var data = [
 	//{{{C&Cpp
 	{
 		name:'C&Cpp',
-		chidren:[
+		children:[
 			{
 				name: 'Share',
-				chidren: [
+				children: [
 					{ name: '一分C++文档', url: 'http://classfoo.cn/foo/c++' }
 				]
 			}
@@ -279,7 +279,7 @@ var data = [
 	//UI{{{
 	{
 		name:'UI',
-		chidren:[
+		children:[
 			{ name: 'popup', url: './ui/bundle/popup/popup.html' }
 		]
 	}
@@ -291,7 +291,7 @@ var data = [
 "use strict";
 $.fn.tree=function(options){
 	options = $.extend(true, {
-		animate: true,
+		animate: {time:0},
 		data: []
 	}, options);
 	var handler = (function(){
@@ -323,7 +323,7 @@ $.fn.tree=function(options){
 						var name = document.createElement('span');
 						var li = document.createElement('li');
 						var line = document.createElement('a');
-						var lindent = data[i].chidren ? (deep==1?deep-2:deep-1) : deep;
+						var lindent = data[i].children ? (deep==1?deep-2:deep-1) : deep;
 						for(var j=0; j<lindent; j++){
 							var span = document.createElement('span');
 							span.className = j===lindent-1 ? 'join' : 'line';
@@ -331,7 +331,7 @@ $.fn.tree=function(options){
 						}
 						name.appendChild(document.createTextNode(data[i].name));
 						line.option = data[i];
-						if(data[i].chidren){
+						if(data[i].children){
 							var hit = document.createElement('span');
 							hit.className = 'hit';
 							line.appendChild(hit);
@@ -343,9 +343,9 @@ $.fn.tree=function(options){
 						line.appendChild(name);
 						line.setAttribute('href', 'javascript:;');
 						li.appendChild(line);
-						if(data[i].chidren){
+						if(data[i].children){
 							icon.className = 'folder';
-							li.appendChild(createTree(data[i].chidren, deep+1));
+							li.appendChild(createTree(data[i].children, deep+1));
 						}
 						// if(i===0) li.className = li.className + ' first';
 						// if(i===ii) li.className = li.className + ' last';
@@ -368,38 +368,31 @@ $.fn.tree=function(options){
 							that.currentElement = this;
 							$(this).addClass('current');
 						}
-						e.stopPropagation();
-						e.preventDefault();
 						return false;
 					}
 				});
 				w.appendTo(box);
 			},
 			isLeaf: function(node){
-				return !node.children[0].option.chidren;
+				return !node.children[0].option.children;
 			},
 			toggle: function(folder){
-				var method = 'hide';
-				var $sub = $('>ul', folder);
-				if($sub.css('display')==='none'){
-					$(folder).addClass('expanded');
-					method = 'show';
-				}else{
-					$(folder).removeClass('expanded');
-				}
-				$sub[method]();
+				this[$(folder.children[1]).css('display')==='none' ? 'expand' : 'collapse'](folder);
+				return this;
 			},
 			expand: function(folder){
 				var method = 'show';
-				var $sub = $('>ul', folder);
-				$(folder).addClass('expanded');
-				$sub[method]();
+				$(folder).addClass('expanded').find('>a>.hit').addClass('hit-open');
+				$(folder.children[1])[method](this.userOptions.animate.time);
+				this.contents.style.width = this.container.scrollWidth + 'px';
+				return this;
 			},
 			collapse: function(folder){
 				var method = 'hide';
-				var $sub = $('>ul', folder);
-				$(folder).removeClass('expanded');
-				$sub[method]();
+				$(folder).removeClass('expanded').find('>a>.hit').removeClass('hit-open');
+				$(folder.children[1])[method](this.userOptions.animate.time);
+				this.contents.style.width = this.container.scrollWidth + 'px';
+				return this;
 			}
 		};
 		handler.prototype.init.prototype = handler.prototype;
