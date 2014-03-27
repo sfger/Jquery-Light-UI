@@ -287,6 +287,26 @@ var data = [
 ];
 ///}}}
 
+if(!Function.prototype.bind){
+	Function.prototype.bind = function(oThis){
+		if(typeof this!=="function"){
+			throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+		}
+		var aArgs = Array.prototype.slice.call(arguments, 1), 
+			fToBind = this, 
+			fNOP    = function(){},
+			fBound  = function(){
+				return fToBind.apply(
+					this instanceof fNOP && oThis ? this : oThis || window,
+					aArgs.concat(Array.prototype.slice.call(arguments))
+				);
+			};
+		fNOP.prototype   = this.prototype;
+		fBound.prototype = new fNOP();
+		return fBound;
+	};
+}
+
 (function($){
 "use strict";
 $.fn.tree=function(options){
@@ -359,38 +379,40 @@ $.fn.tree=function(options){
 				this.container  = box.get(0);
 				this.contents   = w.get(0);
 				$(this.contents).delegate('a', {
+					'contextmenu': function(e){
+						return that.userOptions.onContextmenu.bind(this)(e);
+					},
 					'click': function(e){
-						var folder = this.parentNode;
-						if(!that.isLeaf(folder)){
-							that.toggle(folder);
+						if(!that.isLeaf(this)){
+							that.toggle(this);
 						}else{
 							$(that.currentElement).removeClass('current');
 							that.currentElement = this;
 							$(this).addClass('current');
 						}
-						return false;
+						return that.userOptions.onClick.bind(this)(e);
 					}
 				});
 				w.appendTo(box);
 			},
 			isLeaf: function(node){
-				return !node.children[0].option.children;
+				return !node.option.children;
 			},
 			toggle: function(folder){
-				this[$(folder.children[1]).css('display')==='none' ? 'expand' : 'collapse'](folder);
+				this[$(folder.nextSibling).css('display')==='none' ? 'expand' : 'collapse'](folder);
 				return this;
 			},
 			expand: function(folder){
 				var method = 'show';
-				$(folder).addClass('expanded').find('>a>.hit').addClass('hit-open');
-				$(folder.children[1])[method](this.userOptions.animate.time);
+				$(folder.parentNode).addClass('expanded').find('>a>.hit').addClass('hit-open');
+				$(folder.nextSibling)[method](this.userOptions.animate.time);
 				this.contents.style.width = this.container.scrollWidth + 'px';
 				return this;
 			},
 			collapse: function(folder){
 				var method = 'hide';
-				$(folder).removeClass('expanded').find('>a>.hit').removeClass('hit-open');
-				$(folder.children[1])[method](this.userOptions.animate.time);
+				$(folder.parentNode).removeClass('expanded').find('>a>.hit').removeClass('hit-open');
+				$(folder.nextSibling)[method](this.userOptions.animate.time);
 				this.contents.style.width = this.container.scrollWidth + 'px';
 				return this;
 			}
