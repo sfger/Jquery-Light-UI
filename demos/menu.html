@@ -17,19 +17,23 @@
 .icon-chart{background:url("../img/chart.png");}
 .icon-user{background:url("../img/user.png");}
 .icon-money{background:url("../img/money.png");}
-.menu-container{position:absolute;width:98px;_width:100px;overflow:hidden;background:white;border:1px solid #aaa;}
+.menu-container{position:absolute;width:98px;_width:100px;background:white;border:1px solid #aaa;}
 .menu-container .menu-vertical-line{position:absolute;top:0;left:22px;height:100%;border-left:1px solid #ccc;}
-.menu-container ul li{list-style:none;}
-.menu-container a{display:block;text-decoration:none;color:black;white-space:nowrap;border:1px solid white;margin:1px;border-radius:2px;}
-.menu-container a:hover{background:#e1e1e1;border-color:#bbb;}
-.menu-container span{display:inline-block;*display:inline;*zoom:1;height:17px;width:17px;line-height:17px;vertical-align:middle;}
-.menu-container .text{width:auto;padding:2px 0 0 8px;}
-.menu-container .separate {*font-size:0;*line-height:0;overflow:hidden;+vertical-align:baseline;_vertical-align:middle;}
-.menu-container .separate span {display:block;width:auto;height:0px;_height:1px;overflow:hidden;border-top:1px solid #ccc;margin:0 4px 0 26px;}
+.menu-container ul li{list-style:none;float:left;width:100%;}
+.menu-container li{height:22px;}
+.menu-container a{display:block;text-decoration:none;overflow:hidden;color:black;white-space:nowrap;border:1px solid white;margin:1px;border-radius:2px;}
+.menu-container a:hover{background:#e1e1e1;border-color:#bbb;color:#aaa;}
+.menu-container a.disabled{color:#aaa;}
+.menu-container span{display:inline-block;*display:inline;*zoom:1;height:16px;width:16px;line-height:16px;vertical-align:middle;cursor:pointer;}
+.menu-container .sub-tag {float:right;margin:4px 2px;_margin-top:3px;width:0px;height:0px;border-bottom:5px solid transparent;border-top:5px solid transparent;border-left:5px solid black;font-size:0;line-height:0;}
+.menu-container .text{width:auto;padding:2px 0 0 8px;white-space:nowrap;}
+.menu-container .separate {*font-size:0;*line-height:0;height:3px;;overflow:hidden;vertical-align:middle;}
+.menu-container .separate span {display:block;width:auto;height:0px;_height:1px;overflow:hidden;border-top:1px solid #ccc;margin:1px 4px 1px 26px;}
 </style>
 </head>
 <body>
 <div id="page">
+	<h1>页面点击右键查看菜单</h3>
 	<div id="my_menu"></div>
 </div><!-- #page end! -->
 <script type="text/javascript" src="../jquery.min.js"></script>
@@ -39,30 +43,58 @@
 try {
 	document.execCommand('BackgroundImageCache', false, true);
 }catch(e){}
-$('#my_menu').menu({
+var my_menu = $('#my_menu').menu({
 	data: [
 		{name:'chart', icon:'chart', text:'流量'},
 		{name:'takein', icon:'money', text:'收入'},
-		{name:'user', icon:'user', text:'用户'},
-		{name:'test', text:'测试', disabled:true},
+		{name:'user', icon:'user', disabled:true, text:'用户'},
+		{name:'sub', text:'Sub', children:[
+			{name:'chart2', icon:'chart', text:'流量2'},
+			{name:'takein2', icon:'money', text:'收入2', children:[
+				{name:'chart3', icon:'chart', text:'流量3'},
+				{name:'takein3', icon:'money', text:'收入3'},
+				{name:'user3', icon:'user', text:'用户3'},
+				{name:'test3', text:'测试3', disabled:true},
+				{'class':'separate'},
+				{name:'exit3', text:'退出3'}
+			]},
+			{name:'user2', icon:'user', text:'用户2'},
+			{name:'test2', text:'测试2', disabled:true, children:[
+				{name:'chart3', icon:'chart', text:'流量3'},
+				{name:'takein3', icon:'money', text:'收入3'},
+				{name:'user3', icon:'user', text:'用户3'},
+				{name:'test3', text:'测试3', disabled:true},
+				{'class':'separate'},
+				{name:'exit3', text:'退出3'}
+			]},
+			{'class':'separate'},
+			{name:'exit', text:'退出2'}
+		]},
 		{'class':'separate'},
 		{name:'exit', text:'退出'}
 	],
 	onCreate: function(){
-		this.addMenuItem({name:'aaa', icon:'user', text:'aaa'});
-		this.updateMenuItem('test', {name:'teser', icon:'chart', text:'测试', disabled:false});
-		this.deleteMenuImte('sep');
+		this.addMenuItem({name:'aaa', icon:'user', text:'aaa'}, 'before', 'chart2');
+		this.updateMenuItem('chart', {name:'teser', icon:'chart', text:'测试', disabled:true});
+		//this.deleteMenuItem('chart');
 	},
-	onShow: function(item){
-		alert('show');
+	onShow: function(){
+		//alert('show');
 	},
-	onHide: function(item){
-		alert('hide');
+	onHide: function(){
+		//alert('hide');
 	},
 	onClick: function(item){
 		alert(item.name);
 	}
 });
+$(document).on({
+	contextmenu: function(e){
+		my_menu.show(e);
+		return false;
+	}
+});
+
 //]]>
 </script>
 </body>
