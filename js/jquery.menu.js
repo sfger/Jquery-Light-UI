@@ -76,6 +76,7 @@ $.fn.menu=function(options){
 							sub_container.style.display = 'none';
 							if(document.documentMode===5 || /MSIE 6/.test(navigator.userAgent)){
 								sub_container.style.position = 'absolute';
+								sub_container.style.marginTop = '-22px';
 							}else{
 								sub_container.style.position = 'relative';
 								sub_container.style.top = '-22px';
@@ -153,19 +154,25 @@ $.fn.menu=function(options){
 					});
 				}
 				this.userOptions.onShow.bind(this)();
+				return this;
 			},
 			hide: function(){
 				$(this.container).hide();
 				this.userOptions.onHide.bind(this)();
+				return this;
+			},
+			hideMenuItem: function(name){
+				this.menuitems[name].style.display = 'none';
+				return this;
+			},
+			showMenuItem: function(name){
+				this.menuitems[name].style.display = '';
+				return this;
 			},
 			/* option: [Object] just options.data object item
 			 * position: [String] before, after
-			 * target menu item name
+			 * refName: menu item name
 			 * */
-			hideMenuItem: function(name){
-			},
-			showMenuItem: function(name){
-			},
 			addMenuItem: function(option, position, refName){
 				var li = document.createElement('li');
 				if(option['class']=='separate'){

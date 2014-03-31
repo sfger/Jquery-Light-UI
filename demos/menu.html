@@ -76,6 +76,8 @@ var my_menu = $('#my_menu').menu({
 	onCreate: function(){
 		this.addMenuItem({name:'aaa', icon:'user', text:'aaa'}, 'before', 'chart2');
 		this.updateMenuItem('chart', {name:'teser', icon:'chart', text:'测试', disabled:true});
+		//this.hideMenuItem('aaa');
+		//this.showMenuItem('aaa');
 		//this.deleteMenuItem('chart');
 	},
 	onShow: function(){
