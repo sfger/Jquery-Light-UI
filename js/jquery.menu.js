@@ -47,11 +47,12 @@ $.fn.menu=function(options){
 					ul.className = 'clearfix';
 					for(var i=0,ii=data.length-1; i<=ii; i++){
 						var li = document.createElement('li');
+						var line;
 						if(data[i]['class']=='separate'){
-							var line = document.createElement('span');
+							line = document.createElement('span');
 							li.className = data[i]['class'];
 						}else{
-							var line = document.createElement('a');
+							line = document.createElement('a');
 							var icon = document.createElement('span');
 							var text = document.createElement('span');
 							if(data[i].children && data[i].children.length){
@@ -98,10 +99,11 @@ $.fn.menu=function(options){
 						this.showMenuTimer = null;
 					},
 					mouseleave: function(){
-						var that = this;
+						var menu = this;
 						this.showMenuTimer = setTimeout(function(){
-							that.style.display = 'none';
-							that.showMenuTimer = null;
+							menu.style.display = 'none';
+							menu.showMenuTimer = null;
+							that.hide();
 						}, 300);
 					}
 				}).delegate('a', {
@@ -175,11 +177,12 @@ $.fn.menu=function(options){
 			 * */
 			addMenuItem: function(option, position, refName){
 				var li = document.createElement('li');
+				var line;
 				if(option['class']=='separate'){
-					var line = document.createElement('span');
+					line = document.createElement('span');
 					li.className = option['class'];
 				}else{
-					var line = document.createElement('a');
+					line = document.createElement('a');
 					var icon = document.createElement('span');
 					var text = document.createElement('span');
 					icon.className = 'icon' + (option.icon ? ' icon-'+option.icon : '');
@@ -222,7 +225,6 @@ $.fn.menu=function(options){
 				if(!this.menuitems[name]) return this;
 				this.menuitems[name].option = null;
 				$(this.menuitems[name]).remove();
-				var data = this.userOptions.data
 				return this;
 			}
 		};
