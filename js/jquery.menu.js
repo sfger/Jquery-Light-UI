@@ -109,6 +109,7 @@ $.fn.menu=function(options){
 				}).delegate('a', {
 					click: function(){
 						if(this.option.disabled) return false;
+						box.get(0).style.display = 'none';
 						that.userOptions.onClick.bind(this)(this.option);
 					},
 					mouseenter: function(){
