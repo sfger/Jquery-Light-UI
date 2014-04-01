@@ -209,9 +209,14 @@ var create_node = function(node){
 // fn get_table_content{{{
 var get_table_content = function(data, head){
 	head = head || [];
-	var s = '<div class="view-wrapper">';//<div class="data-view"><div>111</div><div>222</div></div>';
-
-	s += '<div class="data-view"><div style="overflow-hidden"><div class="data-head-wrapper"><table class="data-head" cellspacing="0" cellpading="0"><tr class="thead">';
+	var s = '<div class="view-wrapper"><div class="data-view"><div class="data-head-wrapper"><table>';
+	s += '<tr><td><div></div></td></tr>';
+	s += '</table></div><div class="data-body-wrapper" style="overflow:hidden;"><table>';
+	for(var l=0; l<data.length; l++){
+		s += '<tr><td><div>' + (l+1) + '</div></td></tr>';
+	}
+	s += '</table></div></div>';
+	s += '<div class="data-view"><div style=""><div class="data-head-wrapper"><table class="data-head" cellspacing="0" cellpading="0"><tr class="thead">';
 	if(head.length){
 		$.each(head, function(i, one){ s += create_node({name:td, children:one}); });
 	}else{
@@ -233,21 +238,42 @@ var get_table_content = function(data, head){
 		});
 		s += '</tr>';
 	});
-	return s += '</table></div><div></div>';
+	return s += '</table></div></div></div>';
 };
 // }}}
 
 //fn resize_frozen_table{{{
 var resize_frozen_table = function(tables){
-	if(tables.length==2){
-		var data_tds = tables.eq(1).find('tr:first-child').find('td'),
-			tp0 = tables.eq(0).parent(),
-			tp1 = tables.eq(1).parent();
+	if(tables.length==4){
+		var data_tds = tables.eq(3).find('tr:first-child td'),
+			col_tds  = tables.eq(3).find('tr td:first-child'),
+			row_tds  = tables.eq(2).find('tr:first-child td'),
+			tp0 = tables.eq(2).parent(),
+			tp1 = tables.eq(3).parent();
 		tp0.css({width:500000});
 		tp1.css({width:500000});
-		$.each(tables[0].children[0].children[0].children, function(i, one){
-			var w1 = $(this.children[0]).width(),
-				w2 = $(data_tds[i].children[0]).width(),
+		var getHW = function(el, type){
+			var fie = document.documentMode===5 || /MSIE 6/.test(navigator.userAgent);
+			if(fie){
+				type = 'width'==type ? 'Width' : 'Height';
+				return el['offset'+type];
+			}else{
+				return $(el).css(type);
+			}
+		}
+		$.each(tables[1].children[0].children, function(i, one){
+			var h1 = getHW(this.children[0].children[0], 'height'),
+				h2 = getHW(col_tds[i].children[0], 'height'),
+				that = this;
+			if(h1<h2){
+				$(that.children[0].children[0]).css({height:h2});
+			}else{
+				$(col_tds[i].children[0]).css({height:h1});
+			}
+		});
+		$.each(tables[2].children[0].children[0].children, function(i, one){
+			var w1 = getHW(this.children[0], 'width'),
+				w2 = getHW(data_tds[i].children[0], 'width'),
 				that = this;
 			if(w1<w2){
 				$(that.children[0]).css({width:w2});
@@ -255,15 +281,39 @@ var resize_frozen_table = function(tables){
 				$(data_tds[i].children[0]).css({width:w1});
 			}
 		});
-		var width = tables.eq(1).width() + 2;
+
+		var frozen_tds = tables.eq(1).find('tr:first-child td');
+		$.each(tables[0].children[0].children[0].children, function(i, one){//table 0, 1 width
+			var w1 = getHW(this.children[0], 'width'),
+				w2 = getHW(frozen_tds[i].children[0], 'width'),
+				that = this;
+			if(w1<w2){
+				$(this.children[0]).css({width:w2});
+			}else{
+				$(frozen_tds[i].children[0]).css({width:w1});
+			}
+		});
+		+function(){//table 0,2 height
+			var td = tables[0].children[0].children[0].children[0];
+			var h1 = getHW(td.children[0], 'height'),
+				h2 = getHW(row_tds[0].children[0], 'height');
+			if(h1<h2){
+				$(td.children[0]).css({height:h2});
+			}else{
+				$(row_tds[0].children[0]).css({height:h1});
+			}
+		}();
+
+		var width = tables.eq(3).width() + 2;
 		tp1.width(width);
-		tables.eq(0).css('width', width);
-		tables.eq(1).css('width', width);
+		tables.eq(2).css('width', width);
+		tables.eq(3).css('width', width);
 		var width_full = document.compatMode === "CSS1Compat" ? 'auto' : '100%';
 		tp1.css({width:width_full});
 		tp0.parent().css({width:width_full, overflow:'hidden'});
 		$(tp1).on('scroll', function(){
 			tp0.parent().get(0).scrollLeft = this.scrollLeft;
+			tables.get(1).parentNode.scrollTop = this.scrollTop;
 		});
 	}
 };
@@ -295,12 +345,19 @@ $.fn.datagrid=function(options){
 				this.container = box.get(0);
 				var w = $(get_table_content(options.data)).appendTo(box);
 				if(document.documentMode===5 || /MSIE 6/.test(navigator.userAgent)){
-					w.find('.data-view').css({height: $('.data-head-wrapper').get(0).offsetHeight + $('.data-body-wrapper').get(0).offsetHeight});
+					w.find('.data-view').css({height: $('.data-head-wrapper').get(0).offsetHeight + $('.data-body-wrapper').get(0).offsetHeight}).eq(0).css({width:w.find('.data-view').eq(0).find('table').eq(0).width()});
+					$('.data-body-wrapper table, .data-body-wrapper table tr:first-child td').css({borderTop:'none'});
 				}
-				// var dataViews = $('.data-view', w);
-				// dataViews.eq(1).css({width: this.getViewWidth() - dataViews.get(0).offsetWidth});
 				resize_frozen_table($('table', w));
 				options.onCreate.bind(this)();
+				$(window).on('resize', function(){
+					var tables = $('table');
+					tables.eq(1).parent().css({height:tables.get(3).parentNode.clientHeight});
+					var dataViews = $('.data-view', w);
+					dataViews.eq(1).css({width: that.container.clientWidth -  dataViews.get(0).offsetWidth});
+				});
+				$(window).resize();
+				setTimeout(function(){ $(window).resize(); }, 0);
 			}
 		};
 		handler.prototype.init.prototype = handler.prototype;

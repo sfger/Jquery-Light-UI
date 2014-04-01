@@ -10,22 +10,23 @@
 <!-- <link rel="shortcut icon" href="./favicon.ico" /> -->
 <!-- <link rel="stylesheet" href="FF.css" /> -->
 <style type="text/css" media="all">
-* {padding:0;margin:0;font-size:12px;}
+*{padding:0;margin:0;font-size:12px;}
 .clearfix:before, .clearfix:after{content:"";display:table;}
 .clearfix:after{clear:both;overflow:hidden;}
 .clearfix{*zoom:1;}
-.datagrid-container{overflow:auto;}
-.datagrid-container .data-view{display:inline-block;*display:inline;*zoom:1;width:100%;}
+.datagrid-container{overflow:hidden;}
+.datagrid-container .view-wrapper{position:relative;}
+.datagrid-container .data-view{display:inline-block;*display:inline;*zoom:1;/*width:100%;*/vertical-align:top;}
 .datagrid-container table{border:1px solid #ccc;border-collapse:collapse;}
 .datagrid-container td{border:1px solid #ccc;}
-.datagrid-container .data-body-wrapper{position:relative;top:-1px;_position:absolute;_top:auto;_margin-top:-1px;}
+.datagrid-container .data-body-wrapper table, .datagrid-container .data-body-wrapper table tr:first-child td{border-top:none;}
+//.datagrid-container .data-body-wrapper{position:relative;top:-1px;_position:absolute;_top:auto;_margin-top:-1px;}
 .datagrid-container td div{line-height:20px;+line-height:18px;color:#333;white-space:nowrap;padding:1px 3px;}
 .datagrid-container .data-head td div{color:#666;background:#f4f4f4;text-align:center;}
 .datagrid-container td span{font-family:宋体;}
 .datagrid-container .data-head-wrapper{overflow:hidden;}
-.datagrid-container .data-body-wrapper{height:450px;overflow:auto;}
-
-#my_datagrid {width:auto;}
+.datagrid-container .data-body-wrapper{height:250px;overflow:auto;}
+#my_datagrid{width:auto;_width:100%;border:1px solid green;}
 </style>
 </head>
 <body>
@@ -37,7 +38,7 @@
 <script type="text/javascript">
 //<![CDATA[
 var data = [];
-for(var row=0; row<165; row++){
+for(var row=0; row<45; row++){
     data[row] = {};
     for(var col=0; col<35; col++){
 		data[row]['col-'+(col+1)] = 'row:' + (row+1) + '<br />col:' + (col+1);
@@ -46,7 +47,7 @@ for(var row=0; row<165; row++){
 var my_datagrid = $('#my_datagrid').datagrid({
 	data: data,
 	rowNum: true,
-	forozenColumn:[],
+	frozenColumn:[],
 	onCreate: function(){
 	}
 });
