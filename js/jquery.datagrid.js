@@ -318,7 +318,7 @@ $.fn.datagrid=function(options){
 				}
 				+function(){// css selector fix
 					var fie = navigator.userAgent.match(/MSIE (\d*)/);
-					if(fie && fie[1]<9){
+					if(fie){
 						$('.data-view', w).eq(1).find('table, table td:first-child').css({borderLeft:'none'});
 					}
 				}();
@@ -331,7 +331,7 @@ $.fn.datagrid=function(options){
 				var dataViews = $('.data-view', this.container);
 				var tables = $('table', dataViews);
 				tables.eq(1).parent().css({height:tables.get(3).parentNode.clientHeight});
-				dataViews.eq(1).css({width: this.container.clientWidth - dataViews.get(0).offsetWidth});
+				dataViews.eq(1).css({width: this.container.clientWidth - 1 - dataViews.get(0).offsetWidth});
 			}
 		};
 		handler.prototype.init.prototype = handler.prototype;
