@@ -20,12 +20,13 @@
 .datagrid-container table{border:1px solid #ccc;border-collapse:collapse;}
 .datagrid-container td{border:1px solid #ccc;}
 .datagrid-container .data-body-wrapper table, .datagrid-container .data-body-wrapper table tr:first-child td{border-top:none;}
-//.datagrid-container .data-body-wrapper{position:relative;top:-1px;_position:absolute;_top:auto;_margin-top:-1px;}
+.datagrid-container .data-view:last-child table, .datagrid-container .data-view:last-child table td:first-child{border-left:none;}
 .datagrid-container td div{line-height:20px;+line-height:18px;color:#333;white-space:nowrap;padding:1px 3px;}
-.datagrid-container .data-head td div{color:#666;background:#f4f4f4;text-align:center;}
+.datagrid-container tr:hover{background:#e6e6e6;}
+.datagrid-container .data-head td div{color:#666;background:#f4f4f4;text-align:center;white-space:nowrap}
 .datagrid-container td span{font-family:宋体;}
 .datagrid-container .data-head-wrapper{overflow:hidden;}
-.datagrid-container .data-body-wrapper{height:250px;overflow:auto;}
+.datagrid-container .data-body-wrapper{height:320px;overflow:auto;}
 #my_datagrid{width:auto;_width:100%;border:1px solid green;}
 </style>
 </head>
@@ -47,7 +48,49 @@ for(var row=0; row<45; row++){
 var my_datagrid = $('#my_datagrid').datagrid({
 	data: data,
 	rowNum: true,
-	frozenColumn:[],
+	frozenColumns: [
+		{field:'col-1', name:'固定第一列',
+			formatter: function(val, row, key){
+				return '格式化: ' + val;
+			}
+		},
+		{field:'col-2', name:'固定第二列'}
+	],
+	columns: [
+		{field:'col-3', name:'第三列'},
+		{field:'col-4'},
+		{field:'col-5'},
+		{field:'col-6'},
+		{field:'col-7'},
+		{field:'col-8'},
+		{field:'col-9'},
+		{field:'col-10'},
+		{field:'col-11'},
+		{field:'col-12'},
+		{field:'col-13'},
+		{field:'col-14'},
+		{field:'col-15'},
+		{field:'col-16'},
+		{field:'col-17'},
+		{field:'col-18'},
+		{field:'col-19'},
+		{field:'col-20'},
+		{field:'col-21'},
+		{field:'col-22'},
+		{field:'col-23'},
+		{field:'col-24'},
+		{field:'col-25'},
+		{field:'col-26'},
+		{field:'col-27'},
+		{field:'col-28'},
+		{field:'col-29'},
+		{field:'col-30'},
+		{field:'col-31'},
+		{field:'col-32'},
+		{field:'col-33'},
+		{field:'col-34'},
+		{field:'col-35'}
+	],
 	onCreate: function(){
 	}
 });
