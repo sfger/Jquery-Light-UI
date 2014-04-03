@@ -202,16 +202,14 @@ $.fn.datagrid=function(options){
 						});
 						return ret;
 					};
-					var s = '<div class="view-wrapper"><div class="data-view"><div class="data-head-wrapper"><table>';
+					var s = '<div class="view-wrapper"><div class="data-view"><div class="data-head"><table><tr>';
 
 					//rowNum and frozenColumns head
-					s += '<tr>';
 					if(options.rowNum) s += '<td><div></div></td>';
 					s += get_head_rows(options.frozenColumns);
-					s += '</tr>';
 
 					//rowNum and frozenColumns data
-					s += '</table></div><div class="data-body-wrapper" style="overflow:hidden;"><table>';
+					s += '</tr></table></div><div class="data-body-wrapper" style="overflow:hidden;"><table>';
 					s += get_data_rows(data, options.frozenColumns, true);
 					s += '</table></div></div>';
 					s += '<div class="data-view"><div style=""><div class="data-head-wrapper"><table class="data-head"><tr>';
@@ -219,6 +217,162 @@ $.fn.datagrid=function(options){
 					s += '</tr></table></div></div><div class="data-body-wrapper"><table class="data-body">';
 					s += get_data_rows(data, options.columns);
 					return s += '</table></div></div></div>';
+				};
+				var createElement = function(node){
+					var ret = document.createDocumentFragment(),
+						attr = null,
+						children = null,
+						fn = createElement,
+						node_type = getType(node),
+						hasOwnProperty = Object.prototype.hasOwnProperty;
+					if(node_type === 'Array'){
+						for(var i in node) ret.appendChild( fn(node[i]) );
+					}else{
+						if(node_type in {'String':1, 'Number':1}){
+							ret.appendChild( document.createTextNode(node) );
+						}else if(node_type==='Object' && node.name){
+							var element = document.createElement(node.name);
+							attr = node.attr, children = node.children;
+							if(attr){
+								for(var key in attr){
+									if(key in {'class':1, 'className':1}){
+										element.className = attr[key];
+									}else if(key==='style'){
+										var style = attr[key];
+										var ot = getType(style);
+										attr[key] = '';
+										if(ot=='Object'){
+											for(var sk in style){
+												if(hasOwnProperty.call(style, sk)) element.style[sk] = style[sk];
+											}
+										}else if(ot=='String'){
+											element.style.cssText = style;
+										}
+									}else{
+										element.setAttribute(key, attr[key]);
+									}
+								}
+							}
+							if(children.nodeType && children.nodeName){
+								element.appendChild(children);
+							}else{
+								if(getType(children) !== 'Array') children = [children];
+								element.appendChild( fn(children) );
+							}
+							ret.appendChild(element);
+						}
+					}
+					return ret;
+				}
+				get_table = function(){
+					var get_head_rows = function(cols){
+						var ret = document.createDocumentFragment();
+						cols.forEach(function(option, ii){
+							var td = document.createElement('td');
+							td.appendChild(document.createElement('div'));
+							td.children[0].innerHTML = (option.name || option.field || '');
+							ret.appendChild(td);
+						});
+						return ret;
+					};
+					var get_data_rows = function(data, cols, isLeft){
+						var ret = document.createDocumentFragment();
+						data.forEach(function(row, i){
+							var tr = document.createElement('tr');
+							if(options.rowNum && isLeft){
+								var td = document.createElement('td');
+								td.appendChild(document.createElement('div'));
+								td.children[0].innerHTML = i+1;
+								tr.appendChild(td);
+							}
+							cols.forEach(function(option, ii){
+								var field = option.field,
+									val = row[field],
+									formatter = option.formatter;
+								var ss = getType(formatter)==='Function' ? formatter(val, row, field) : val;
+								var td = document.createElement('td');
+								td.appendChild(document.createElement('div'));
+								td.children[0].innerHTML = ss;
+								tr.appendChild(td);
+							});
+							ret.appendChild(tr);
+						});
+						return ret;
+					};
+					var grid = createElement({
+						name: 'div', attr: {className: 'view-wrapper'},
+						children: [{
+							name: 'div', attr: {className: 'data-view'},
+							children: [{
+								name: 'div', attr: {className: 'data-head'},
+								children: {
+									name: 'table',
+									children : {
+										name : 'tbody',
+										children : {
+											name: 'tr',
+											children: (function(){
+												var ret = document.createDocumentFragment();
+												if(options.rowNum){
+													var td = document.createElement('td');
+													td.innerHTML = '<div></div>';
+													ret.appendChild(td);
+												}
+												ret.appendChild(get_head_rows(options.frozenColumns));
+												return ret;
+											})()
+										}
+									}
+								}
+							}, {
+								name: 'div',
+								attr: {className:'data-body-wrapper', style:'overflow:hidden;'},
+								children: {
+									name: 'table',
+									children : {
+										name : 'tbody',
+										children : get_data_rows(data, options.frozenColumns, true)
+									}
+								}
+							}
+						]}, {
+							name: 'div',
+							attr: {className: 'data-view'},
+							children: [
+								{
+									name: 'div',
+									attr: {style:'overflow:hidden'},
+									children: {
+										name: 'div',
+										attr: {className: 'data-head-wrapper'},
+										children: {
+											name: 'table',
+											attr: {className: 'data-head'},
+											children: {
+												name: 'tbody',
+												children: {
+													name: 'tr',
+													children: get_head_rows(options.columns)
+												}
+											}
+										}
+									}
+								}, {
+									name: 'div',
+									attr: {className: 'data-body-wrapper'},
+									children: {
+										name: 'table',
+										attr: {className: 'data-body'},
+										children: {
+											name: 'tbody',
+											children: get_data_rows(data, options.columns)
+										}
+									}
+								}
+							]
+						}]
+					});
+					return grid;
 				};
 				// }}}
 
@@ -299,15 +453,15 @@ $.fn.datagrid=function(options){
 				};
 				//}}}
 
-				var w = $(get_table(options.data)).appendTo(box);
-				resize_table($('table', w));
+				$(get_table(options.data)).appendTo(box);
+				resize_table($('table', box));
 				if(document.documentMode===5 || /MSIE 6/.test(navigator.userAgent)){
-					w.find('.data-view').css({height: $('.data-head-wrapper').get(0).offsetHeight + $('.data-body-wrapper').get(0).offsetHeight})// css height:100% fix,
-						.eq(0).css({width:w.find('.data-view').eq(0).find('table').eq(0).width()});// css display:inline fix
+					box.find('.data-view').css({height: $('.data-head-wrapper').get(0).offsetHeight + $('.data-body-wrapper').get(0).offsetHeight})// css height:100% fix,
+						.eq(0).css({width:box.find('.data-view').eq(0).find('table').eq(0).width()});// css display:inline fix
 
 					// css selector fix
-					$('.data-body-wrapper table, .data-body-wrapper table tr:first-child td', w).css({borderTop:'none'});
-					w.delegate('tr', {// css tr:hover fix
+					$('.data-body-wrapper table, .data-body-wrapper table tr:first-child td', box).css({borderTop:'none'});
+					box.delegate('tr', {// css tr:hover fix
 						mouseenter: function(){
 							this.style.backgroundColor = '#e6e6e6';
 						},
@@ -319,7 +473,7 @@ $.fn.datagrid=function(options){
 				+function(){// css selector fix
 					var fie = navigator.userAgent.match(/MSIE (\d*)/);
 					if(fie && fie[1]<9){
-						$('.data-view', w).eq(1).find('table, table td:first-child').css({borderLeft:'none'});
+						$('.data-view', box).eq(1).find('table, table td:first-child').css({borderLeft:'none'});
 					}
 				}();
 				options.onCreate.bind(this)();
