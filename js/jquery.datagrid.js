@@ -161,6 +161,50 @@ if(typeof Array.prototype.every != "function"){
 }
 // }}}
 
+// fn createElement {{{
+var createElement = function(node){
+	var ret = document.createDocumentFragment(),
+		fn = createElement,
+		node_type = getType(node),
+		text = {String:1, Number:1},
+		hasOwnProperty = Object.prototype.hasOwnProperty;
+	if(node_type === 'Array'){
+		for(var i in node) ret.appendChild(fn(node[i]));
+	}else if(text[node_type]){
+		ret.appendChild(document.createTextNode(node));
+	}else if(node.nodeType && node.nodeName){
+		ret.appendChild(node);
+	}else if(node_type==='Object' && node.name){
+		var element = document.createElement(node.name),
+			attr = node.attr, children = node.children;
+		if(attr){
+			for(var key in attr){
+				if(key in {'class':1, 'className':1}){
+					element.className = attr[key];
+				}else if(key==='style'){
+					var style = attr[key], ot = getType(style);
+					if(ot=='Object'){
+						for(var sk in style)
+							if(hasOwnProperty.call(style, sk))
+								element.style[sk] = style[sk];
+					}else if(ot=='String'){
+						element.style.cssText = style;
+					}
+				}else{
+					element.setAttribute(key, attr[key]);
+				}
+			}
+		}
+		if(children){
+			if(text[getType(children)]) element.innerHTML = children;
+			else element.appendChild(fn(children));
+		}
+		ret.appendChild(element);
+	}
+	if(!ret.children) ret.children = ret.childNodes;
+	return ret;
+};
+// }}}
 (function($){
 $.fn.datagrid=function(options){
 	options = $.extend(true, {
@@ -178,265 +222,113 @@ $.fn.datagrid=function(options){
 				box.addClass('datagrid-container clearfix');
 				this.container = box.get(0);
 				// fn get_table{{{
-				var get_table = function(data, head){
+				var get_table = function(){
 					var get_head_rows = function(cols){
-						var ret = '';
+						var ret = [];
+						if(!cols) return ret;
 						cols.forEach(function(option, ii){
-							ret += '<td><div>' + (option.name||option.field||'') + '</div></td>';
+							var title = (option.name || option.field || '');
+							ret.push(createElement({name:'td', children:{name:'div', children:title}}));
 						});
 						return ret;
 					};
 					var get_data_rows = function(data, cols, isLeft){
-						var ret = '';
+						var ret = [];
 						data.forEach(function(row, i){
-							ret += '<tr>';
-							if(options.rowNum && isLeft) ret += '<td><div>' + (i+1) + '</div></td>';
-							cols.forEach(function(option, ii){
-								var field = option.field,
-									val = row[field],
-									formatter = option.formatter;
-								var ss = getType(formatter)==='Function' ? formatter(val, row, field) : val;
-								ret += '<td><div>' + ss + '</div></td>';
-							});
-							ret += '</tr>';
+							ret.push(createElement({
+								name:'tr', children:(function(){
+									var nodes = [];
+									if(options.rowNum && isLeft)
+										nodes.push(createElement({name:'td', children:{name:'div', children:i+1}}));
+									cols && cols.forEach(function(option, ii){
+										var field = option.field, val = row[field], formatter = option.formatter;
+										var show = getType(formatter)==='Function' ? formatter(val, row, field) : val;
+										nodes.push(createElement({name:'td', children:{name:'div', children:show}}));
+									});
+									return nodes;
+								})()
+							}));
 						});
 						return ret;
 					};
-					var s = '<div class="view-wrapper"><div class="data-view"><div class="data-head"><table><tr>';
-
-					//rowNum and frozenColumns head
-					if(options.rowNum) s += '<td><div></div></td>';
-					s += get_head_rows(options.frozenColumns);
-
-					//rowNum and frozenColumns data
-					s += '</tr></table></div><div class="data-body-wrapper" style="overflow:hidden;"><table>';
-					s += get_data_rows(data, options.frozenColumns, true);
-					s += '</table></div></div>';
-					s += '<div class="data-view"><div style=""><div class="data-head-wrapper"><table class="data-head"><tr>';
-					s += get_head_rows(options.columns);
-					s += '</tr></table></div></div><div class="data-body-wrapper"><table class="data-body">';
-					s += get_data_rows(data, options.columns);
-					return s += '</table></div></div></div>';
-				};
-				var createElement = function(node){
-					var ret = document.createDocumentFragment(),
-						attr = null,
-						children = null,
-						fn = createElement,
-						node_type = getType(node),
-						hasOwnProperty = Object.prototype.hasOwnProperty;
-					if(node_type === 'Array'){
-						for(var i in node) ret.appendChild( fn(node[i]) );
-					}else{
-						if(node_type in {'String':1, 'Number':1}){
-							ret.appendChild( document.createTextNode(node) );
-						}else if(node_type==='Object' && node.name){
-							var element = document.createElement(node.name);
-							attr = node.attr, children = node.children;
-							if(attr){
-								for(var key in attr){
-									if(key in {'class':1, 'className':1}){
-										element.className = attr[key];
-									}else if(key==='style'){
-										var style = attr[key];
-										var ot = getType(style);
-										attr[key] = '';
-										if(ot=='Object'){
-											for(var sk in style){
-												if(hasOwnProperty.call(style, sk)) element.style[sk] = style[sk];
-											}
-										}else if(ot=='String'){
-											element.style.cssText = style;
-										}
-									}else{
-										element.setAttribute(key, attr[key]);
-									}
-								}
-							}
-							if(children.nodeType && children.nodeName){
-								element.appendChild(children);
-							}else{
-								if(getType(children) !== 'Array') children = [children];
-								element.appendChild( fn(children) );
-							}
-							ret.appendChild(element);
-						}
-					}
-					return ret;
-				}
-				get_table = function(){
-					var get_head_rows = function(cols){
-						var ret = document.createDocumentFragment();
-						cols.forEach(function(option, ii){
-							var td = document.createElement('td');
-							td.appendChild(document.createElement('div'));
-							td.children[0].innerHTML = (option.name || option.field || '');
-							ret.appendChild(td);
-						});
-						return ret;
-					};
-					var get_data_rows = function(data, cols, isLeft){
-						var ret = document.createDocumentFragment();
-						data.forEach(function(row, i){
-							var tr = document.createElement('tr');
-							if(options.rowNum && isLeft){
-								var td = document.createElement('td');
-								td.appendChild(document.createElement('div'));
-								td.children[0].innerHTML = i+1;
-								tr.appendChild(td);
-							}
-							cols.forEach(function(option, ii){
-								var field = option.field,
-									val = row[field],
-									formatter = option.formatter;
-								var ss = getType(formatter)==='Function' ? formatter(val, row, field) : val;
-								var td = document.createElement('td');
-								td.appendChild(document.createElement('div'));
-								td.children[0].innerHTML = ss;
-								tr.appendChild(td);
-							});
-							ret.appendChild(tr);
-						});
-						return ret;
-					};
-					var grid = createElement({
-						name: 'div', attr: {className: 'view-wrapper'},
-						children: [{
-							name: 'div', attr: {className: 'data-view'},
-							children: [{
-								name: 'div', attr: {className: 'data-head'},
-								children: {
-									name: 'table',
-									children : {
-										name : 'tbody',
-										children : {
-											name: 'tr',
-											children: (function(){
-												var ret = document.createDocumentFragment();
-												if(options.rowNum){
-													var td = document.createElement('td');
-													td.innerHTML = '<div></div>';
-													ret.appendChild(td);
-												}
-												ret.appendChild(get_head_rows(options.frozenColumns));
+					return createElement({
+						name:'div', attr:{className:'view-wrapper'}, children:[{
+							name:'div', attr:{className:'view frozen'}, children:[{
+								name:'div', children:{
+									name:'table', attr:{className:'frozen head'}, children:{
+										name:'tbody', children:{
+											name:'tr', children:(function(){
+												var ret = [];
+												if(options.rowNum)
+													ret.push(createElement({name:'td', children:{name:'div'}}));
+												ret.push(get_head_rows(options.frozenColumns));
 												return ret;
 											})()
 										}
 									}
 								}
 							}, {
-								name: 'div',
-								attr: {className:'data-body-wrapper', style:'overflow:hidden;'},
-								children: {
-									name: 'table',
-									children : {
-										name : 'tbody',
-										children : get_data_rows(data, options.frozenColumns, true)
+								name:'div', attr:{className:'body-wrapper', style:'overflow:hidden;'}, children:{
+									name:'table', attr:{className:'frozen body'}, children:{
+										name:'tbody', children:
+											get_data_rows(data, options.frozenColumns, true)
 									}
 								}
 							}
 						]}, {
-							name: 'div',
-							attr: {className: 'data-view'},
-							children: [
-								{
-									name: 'div',
-									attr: {style:'overflow:hidden'},
-									children: {
-										name: 'div',
-										attr: {className: 'data-head-wrapper'},
-										children: {
-											name: 'table',
-											attr: {className: 'data-head'},
-											children: {
-												name: 'tbody',
-												children: {
-													name: 'tr',
-													children: get_head_rows(options.columns)
-												}
+							name:'div', attr:{className: 'view'}, children:[{
+								name:'div', attr:{style:'overflow:hidden'}, children:{
+									name:'div', attr:{className: 'head-wrapper'}, children:{
+										name:'table', attr:{className: 'head'}, children:{
+											name:'tbody', children:{
+												name:'tr', children:
+													get_head_rows(options.columns)
 											}
 										}
 									}
-								}, {
-									name: 'div',
-									attr: {className: 'data-body-wrapper'},
-									children: {
-										name: 'table',
-										attr: {className: 'data-body'},
-										children: {
-											name: 'tbody',
-											children: get_data_rows(data, options.columns)
-										}
+								}
+							}, {
+								name:'div', attr:{className: 'body-wrapper'}, children:{
+									name:'table', attr:{className: 'body'}, children:{
+										name:'tbody', children:
+											get_data_rows(data, options.columns)
 									}
 								}
-							]
+							}]
 						}]
 					});
-					return grid;
 				};
 				// }}}
 
-				//fn resize_table{{{
-				var resize_table = function(tables){
+				//fn align_table{{{
+				var align_table = function(tables){
 					if(tables.length==4){
 						var data_tds = tables.eq(3).find('tr:first-child td'),
 							col_tds  = tables.eq(3).find('tr td:first-child'),
-							row_tds  = tables.eq(2).find('tr:first-child td'),
+							row_tds  = tables.eq(2).find('td:first-child'),
 							tp0 = tables.eq(2).parent(),
 							tp1 = tables.eq(3).parent();
 						tp0.css({width:500000});
 						tp1.css({width:500000});
 						var getHW = function(el, type){
-							var fie = document.documentMode===5 || /MSIE 6/.test(navigator.userAgent);
-							if(fie){
-								type = 'width'==type ? 'Width' : 'Height';
-								return el['offset'+type];
-							}else{
-								return $(el)[type]();
-							}
+							return (document.documentMode===5 || /MSIE 6/.test(navigator.userAgent))
+								? el['offset'+('width'==type ? 'Width' : 'Height')]
+								: $(el)[type]();
 						}
-						$.each(tables[1].children[0].children, function(i, one){
-							var h1 = getHW(this.children[0].children[0], 'height'),
-								h2 = getHW(col_tds[i].children[0], 'height'),
-								that = this;
-							if(h1<h2){
-								$(that.children[0].children[0]).css({height:h2});
-							}else{
-								$(col_tds[i].children[0]).css({height:h1});
-							}
-						});
-						$.each(tables[2].children[0].children[0].children, function(i, one){
-							var w1 = getHW(this.children[0], 'width'),
-								w2 = getHW(data_tds[i].children[0], 'width'),
-								that = this;
-							if(w1<w2){
-								$(that.children[0]).css({width:w2});
-							}else{
-								$(data_tds[i].children[0]).css({width:w1});
-							}
-						});
+						var align_td = function(a, b, type){
+							$.each(a, function(i, one){
+								var t1 = getHW(this.children[0], type),
+									t2 = getHW(b[i].children[0], type);
+								if(t1<t2) $(this.children[0])[type](t2);
+								else $(b[i].children[0])[type](t1);
+							});
+						};
+						col_tds.length && align_td(tables.eq(1).find('tr:last-child td'), col_tds, 'height');
+						data_tds.length && align_td(tables.eq(2).find('tr:first-child td'), data_tds, 'width', true);
 
 						var frozen_tds = tables.eq(1).find('tr:first-child td');
-						$.each(tables[0].children[0].children[0].children, function(i, one){//table 0, 1 width
-							var w1 = getHW(this.children[0], 'width'),
-								w2 = getHW(frozen_tds[i].children[0], 'width'),
-								that = this;
-							if(w1<w2){
-								$(this.children[0]).css({width:w2});
-							}else{
-								$(frozen_tds[i].children[0]).css({width:w1});
-							}
-						});
-						+function(){//table 0,2 height
-							var td = tables[0].children[0].children[0].children[0];
-							var h1 = getHW(td.children[0], 'height'),
-								h2 = getHW(row_tds[0].children[0], 'height');
-							if(h1<h2){
-								$(td.children[0]).css({height:h2});
-							}else{
-								$(row_tds[0].children[0]).css({height:h1});
-							}
-						}();
+						frozen_tds.length && align_td(tables.eq(0).find('tr:first-child td'), frozen_tds, 'width');
+						(options.rowNum || frozen_tds.length) && align_td(tables.eq(0).find('td:first-child'), row_tds, 'height');
 
 						var width = tables.eq(3).width() + 2;
 						tp1.width(width);
@@ -454,13 +346,13 @@ $.fn.datagrid=function(options){
 				//}}}
 
 				$(get_table(options.data)).appendTo(box);
-				resize_table($('table', box));
+				align_table($('table', box));
 				if(document.documentMode===5 || /MSIE 6/.test(navigator.userAgent)){
-					box.find('.data-view').css({height: $('.data-head-wrapper').get(0).offsetHeight + $('.data-body-wrapper').get(0).offsetHeight})// css height:100% fix,
-						.eq(0).css({width:box.find('.data-view').eq(0).find('table').eq(0).width()});// css display:inline fix
+					box.find('.view').css({height: $('.head-wrapper').get(0).offsetHeight + $('.body-wrapper').get(0).offsetHeight})// css height:100% fix,
+						.eq(0).css({width:box.find('.view').eq(0).find('table').eq(0).width()});// css display:inline fix
 
 					// css selector fix
-					$('.data-body-wrapper table, .data-body-wrapper table tr:first-child td', box).css({borderTop:'none'});
+					$('.body-wrapper table, .body-wrapper table tr:first-child td', box).css({borderTop:'none'});
 					box.delegate('tr', {// css tr:hover fix
 						mouseenter: function(){
 							this.style.backgroundColor = '#e6e6e6';
@@ -473,7 +365,7 @@ $.fn.datagrid=function(options){
 				+function(){// css selector fix
 					var fie = navigator.userAgent.match(/MSIE (\d*)/);
 					if(fie && fie[1]<9){
-						$('.data-view', box).eq(1).find('table, table td:first-child').css({borderLeft:'none'});
+						$('.view', box).eq(1).find('table, table td:first-child').css({borderLeft:'none'});
 					}
 				}();
 				options.onCreate.bind(this)();
@@ -482,7 +374,7 @@ $.fn.datagrid=function(options){
 				setTimeout(function(){ $(window).resize(); }, 0);
 			},
 			resize: function(){
-				var dataViews = $('.data-view', this.container);
+				var dataViews = $('.view', this.container);
 				var tables = $('table', dataViews);
 				tables.eq(1).parent().css({height:tables.get(3).parentNode.clientHeight});
 				dataViews.eq(1).css({width: this.container.clientWidth - 1 - dataViews.get(0).offsetWidth});
