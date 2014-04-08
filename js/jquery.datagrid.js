@@ -208,7 +208,8 @@ var createElement = function(node){
 (function($){
 $.fn.datagrid=function(options){
 	options = $.extend(true, {
-		data: []
+		colWidth:80,
+		data:[]
 	}, options);
 	var handler = (function(){
 		var handler = function(box, options){
@@ -228,7 +229,7 @@ $.fn.datagrid=function(options){
 						if(!cols) return ret;
 						cols.forEach(function(option, ii){
 							var title = (option.name || option.field || '');
-							ret.push(createElement({name:'td', children:{name:'div', children:title}}));
+							ret.push(createElement({name:'td', children:{name:'div', attr:{style:{width:options.autoColWidth ? 'auto' : ((option.width||options.colWidth) + 'px')}}, children:title}}));
 						});
 						return ret;
 					};
@@ -243,7 +244,7 @@ $.fn.datagrid=function(options){
 									cols && cols.forEach(function(option, ii){
 										var field = option.field, val = row[field], formatter = option.formatter;
 										var show = getType(formatter)==='Function' ? formatter(val, row, field) : val;
-										nodes.push(createElement({name:'td', children:{name:'div', children:show}}));
+										nodes.push(createElement({name:'td', children:{name:'div', attr:{style:{width:options.autoColWidth ? 'auto' : ((option.width||options.colWidth) + 'px')}}, children:show}}));
 									});
 									return nodes;
 								})()
@@ -252,9 +253,9 @@ $.fn.datagrid=function(options){
 						return ret;
 					};
 					return createElement({
-						name:'div', attr:{className:'view-wrapper'}, children:[{
+						name:'div', attr:{className:'view-wrapper' + (options.autoRowHeight ? ' autoRowHeight' : '')}, children:[{
 							name:'div', attr:{className:'view frozen'}, children:[{
-								name:'div', children:{
+								name:'div', attr:{className:'head-wrapper'}, children:{
 									name:'table', attr:{className:'frozen head'}, children:{
 										name:'tbody', children:{
 											name:'tr', children:(function(){
@@ -303,32 +304,47 @@ $.fn.datagrid=function(options){
 				//fn align_table{{{
 				var align_table = function(tables){
 					if(tables.length==4){
-						var data_tds = tables.eq(3).find('tr:first-child td'),
-							col_tds  = tables.eq(3).find('tr td:first-child'),
-							row_tds  = tables.eq(2).find('td:first-child'),
-							tp0 = tables.eq(2).parent(),
+						var tp0 = tables.eq(2).parent(),
 							tp1 = tables.eq(3).parent();
 						tp0.css({width:500000});
 						tp1.css({width:500000});
 						var getHW = function(el, type){
 							return (document.documentMode===5 || /MSIE 6/.test(navigator.userAgent))
-								? el['offset'+('width'==type ? 'Width' : 'Height')]
+								? el['offset'+('width'==type ? 'Width' : 'Height')] + 1
 								: $(el)[type]();
 						}
 						var align_td = function(a, b, type){
 							$.each(a, function(i, one){
-								var t1 = getHW(this.children[0], type),
-									t2 = getHW(b[i].children[0], type);
-								if(t1<t2) $(this.children[0])[type](t2);
-								else $(b[i].children[0])[type](t1);
+								var t1  = getHW(this.children[0], type),
+									t1p = getHW(this, type),
+									t2  = getHW(b[i].children[0], type),
+									t2p = getHW(b[i], type);
+								var s = type==="height" ? true: false;
+								if(t1<t1p) t1 = t1p;
+								if(t2<t2p) t2 = t2p;
+								var t = t1<t2 ? t2 : t1;
+								$(this.children[0])[type](t);
+								$(b[i].children[0])[type](t);
+								if(s){
+									$(this)[type]($(this)[type]());
+									$(this.children[0])[type]('auto');
+									$(b[i])[type]($(b[i])[type]());
+									$(b[i].children[0])[type]('auto');
+								}
+								// if(t1<t2) $(this.children[0])[type](t2);
+								// else $(b[i].children[0])[type](t1);
 							});
 						};
-						col_tds.length && align_td(tables.eq(1).find('tr:last-child td'), col_tds, 'height');
-						data_tds.length && align_td(tables.eq(2).find('tr:first-child td'), data_tds, 'width', true);
-
+						var data_tds = tables.eq(3).find('tr:first-child td'),
+							col_tds  = tables.eq(3).find('tr td:first-child'),
+							row_tds  = tables.eq(2).find('td:first-child');
+						// col_tds.length && align_td(tables.eq(1).find('tr:first-child td'), col_tds, 'height');
+						(options.autoColWidth && data_tds.length) && align_td(tables.eq(2).find('tr:first-child td'), data_tds, 'width', true);
 						var frozen_tds = tables.eq(1).find('tr:first-child td');
-						frozen_tds.length && align_td(tables.eq(0).find('tr:first-child td'), frozen_tds, 'width');
-						(options.rowNum || frozen_tds.length) && align_td(tables.eq(0).find('td:first-child'), row_tds, 'height');
+						(options.autoColWidth && frozen_tds.length) && align_td(tables.eq(0).find('tr:first-child td'), frozen_tds, 'width');
+						(options.autoRowHeight && (options.rowNum || frozen_tds.length)) && align_td(tables.eq(0).find('td:first-child'), row_tds, 'height');
+						(options.autoRowHeight && (options.rowNum || frozen_tds.length)) && align_td(tables.eq(1).find('td:first-child'), col_tds, 'height');
+						(options.rowNum && !options.autoColWidth) && align_td(tables.eq(0).find('tr:first-child td:first-child'), tables.eq(1).find('tr:first-child td:first-child'), 'width');
 
 						var width = tables.eq(3).width() + 2;
 						tp1.width(width);

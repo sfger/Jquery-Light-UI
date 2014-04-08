@@ -21,9 +21,9 @@
 .datagrid-container td{border:1px solid #ccc;}
 .datagrid-container .body-wrapper table, .datagrid-container .body-wrapper table tr:first-child td{border-top:none;}
 .datagrid-container .view:last-child table, .datagrid-container .view:last-child table td:first-child{border-left:none;}
-.datagrid-container td div{line-height:20px;+line-height:18px;color:#333;white-space:nowrap;padding:1px 3px;}
 .datagrid-container tr:hover{background:#e6e6e6;}
-.datagrid-container .head td div{color:#666;background:#f4f4f4;text-align:center;white-space:nowrap}
+.datagrid-container td div{color:#666;height:20px;_height:22px;overflow:hidden;text-align:center;line-height:20px;white-space:nowrap;padding:1px 3px;}
+.datagrid-container .autoRowHeight td div{height:auto;}
 .datagrid-container td span{font-family:宋体;}
 .datagrid-container .head-wrapper{overflow:hidden;}
 .datagrid-container .body-wrapper{height:320px;overflow:auto;}
@@ -46,17 +46,19 @@ for(var row=0; row<45; row++){
     } 
 }
 var my_datagrid = $('#my_datagrid').datagrid({
-	data: data,
-	rowNum: true,
-	frozenColumns: [
+	data:data,
+	rowNum:true,
+	autoRowHeight:false,
+	autoColWidth:false,
+	frozenColumns:[
 		{field:'col-1', name:'固定第一列',
 			formatter: function(val, row, key){
-				return '格式化: ' + val;
+				return '格式化: <br />' + val;
 			}
 		},
 		{field:'col-2', name:'固定第二列'}
 	],
-	columns: [
+	columns:[
 		{field:'col-3', name:'第三列'},
 		{field:'col-4'},
 		{field:'col-5'},
@@ -91,7 +93,7 @@ var my_datagrid = $('#my_datagrid').datagrid({
 		{field:'col-34'},
 		{field:'col-35'}
 	],
-	onCreate: function(){
+	onCreate:function(){
 	}
 });
 
