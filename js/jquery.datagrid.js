@@ -191,7 +191,9 @@ var createElement = function(node){
 						element.style.cssText = style;
 					}
 				}else{
-					element.setAttribute(key, attr[key]);
+					if(key==='rowspan') element.rowSpan = attr[key];
+					if(key==='colspan') element.colSpan = attr[key];
+					else element.setAttribute(key, attr[key]);
 				}
 			}
 		}
@@ -219,19 +221,49 @@ $.fn.datagrid=function(options){
 			init: function(box, options){
 				var document = window.document;
 				var that = this;
+				that.frozenColumns = [];
+				that.columns = [];
 				this.userOptions = options;
 				box.addClass('datagrid-container clearfix');
 				this.container = box.get(0);
 				// fn get_table{{{
 				var get_table = function(){
-					var get_head_rows = function(cols){
+					var get_head_rows = function(rows, isFrozen){
 						var ret = [];
-						if(!cols) return ret;
-						cols.forEach(function(option, ii){
-							var title = (option.name || option.field || '');
-							ret.push(createElement({name:'td', children:{name:'div', attr:{style:{width:options.autoColWidth ? 'auto' : ((option.width||options.colWidth) + 'px')}}, children:title}}));
-						});
-						return ret;
+						var l = 0;
+						var colsType = isFrozen ? 'frozenColumns' : 'columns';
+						if(!rows) return ret;
+						var ii = rows.length - 1;
+						for(var i=ii; i>=0; i--){
+							ret.push(createElement({name:'tr', children:(function(){
+								var nodes = [];
+								for(var j=rows[i].length-1; j>=0; j--){
+									var option = rows[i][j];
+									var title = (option.name || option.field || '');
+									var width = options.autoColWidth ? 'auto' : ((option.width||options.colWidth) + 'px');
+									var td_attr = {};
+									if(option.rowspan) td_attr.rowspan = option.rowspan;
+									if(option.colspan) td_attr.colspan = option.colspan;
+									var colspan = option.colspan || 1;
+									if(colspan==1) that[colsType].push(option);
+									nodes.unshift(createElement({
+										name:'td', attr:td_attr, children:{
+											name:'div', attr:{className:'cell', style:{width:width}}, children:title
+										}
+									}));
+								}
+								if(isFrozen && i==0 && options.rowNum){
+									nodes.unshift(createElement({
+										name:'td', attr:{rowspan:options.frozenColumns.length}, children:{
+											name:'div', attr:{className:'cell'}
+										}
+									}));
+								}
+								return nodes;
+							})()}));
+						}
+						that[colsType] = that[colsType].reverse();
+						return ret.reverse();
 					};
 					var get_data_rows = function(data, cols, isLeft){
 						var ret = [];
@@ -240,11 +272,12 @@ $.fn.datagrid=function(options){
 								name:'tr', children:(function(){
 									var nodes = [];
 									if(options.rowNum && isLeft)
-										nodes.push(createElement({name:'td', children:{name:'div', children:i+1}}));
+										nodes.push(createElement({name:'td', children:{name:'div', attr:{className:'cell'}, children:i+1}}));
 									cols && cols.forEach(function(option, ii){
+										if(!option) return true;
 										var field = option.field, val = row[field], formatter = option.formatter;
 										var show = getType(formatter)==='Function' ? formatter(val, row, field) : val;
-										nodes.push(createElement({name:'td', children:{name:'div', attr:{style:{width:options.autoColWidth ? 'auto' : ((option.width||options.colWidth) + 'px')}}, children:show}}));
+										nodes.push(createElement({name:'td', children:{name:'div', attr:{className:'cell', style:{width:options.autoColWidth ? 'auto' : ((option.width||options.colWidth) + 'px')}}, children:show}}));
 									});
 									return nodes;
 								})()
@@ -257,22 +290,14 @@ $.fn.datagrid=function(options){
 							name:'div', attr:{className:'view frozen'}, children:[{
 								name:'div', attr:{className:'head-wrapper'}, children:{
 									name:'table', attr:{className:'frozen head'}, children:{
-										name:'tbody', children:{
-											name:'tr', children:(function(){
-												var ret = [];
-												if(options.rowNum)
-													ret.push(createElement({name:'td', children:{name:'div'}}));
-												ret.push(get_head_rows(options.frozenColumns));
-												return ret;
-											})()
-										}
+										name:'tbody', children:get_head_rows(options.frozenColumns, true)
 									}
 								}
 							}, {
 								name:'div', attr:{className:'body-wrapper', style:'overflow:hidden;'}, children:{
 									name:'table', attr:{className:'frozen body'}, children:{
 										name:'tbody', children:
-											get_data_rows(data, options.frozenColumns, true)
+											get_data_rows(data, that.frozenColumns, true)
 									}
 								}
 							}
@@ -281,10 +306,7 @@ $.fn.datagrid=function(options){
 								name:'div', attr:{style:'overflow:hidden'}, children:{
 									name:'div', attr:{className: 'head-wrapper'}, children:{
 										name:'table', attr:{className: 'head'}, children:{
-											name:'tbody', children:{
-												name:'tr', children:
-													get_head_rows(options.columns)
-											}
+											name:'tbody', children:get_head_rows(options.columns)
 										}
 									}
 								}
@@ -292,7 +314,7 @@ $.fn.datagrid=function(options){
 								name:'div', attr:{className: 'body-wrapper'}, children:{
 									name:'table', attr:{className: 'body'}, children:{
 										name:'tbody', children:
-											get_data_rows(data, options.columns)
+											get_data_rows(data, that.columns)
 									}
 								}
 							}]
@@ -315,6 +337,8 @@ $.fn.datagrid=function(options){
 						}
 						var align_td = function(a, b, type){
 							$.each(a, function(i, one){
+								if(this.getAttribute('rowspan') > 1 && type=='height') return true;
+								if(this.getAttribute('colspan') > 1 && type=='width') return true;
 								var t1  = getHW(this.children[0], type),
 									t1p = getHW(this, type),
 									t2  = getHW(b[i].children[0], type),
@@ -339,10 +363,10 @@ $.fn.datagrid=function(options){
 							col_tds  = tables.eq(3).find('tr td:first-child'),
 							row_tds  = tables.eq(2).find('td:first-child');
 						// col_tds.length && align_td(tables.eq(1).find('tr:first-child td'), col_tds, 'height');
-						(options.autoColWidth && data_tds.length) && align_td(tables.eq(2).find('tr:first-child td'), data_tds, 'width', true);
-						var frozen_tds = tables.eq(1).find('tr:first-child td');
+						(options.autoColWidth && data_tds.length) && align_td(tables.eq(2).find('tr:last-child td'), data_tds, 'width');
+						var frozen_tds = tables.eq(1).find('tr:last-child td');
 						(options.autoColWidth && frozen_tds.length) && align_td(tables.eq(0).find('tr:first-child td'), frozen_tds, 'width');
-						(options.autoRowHeight && (options.rowNum || frozen_tds.length)) && align_td(tables.eq(0).find('td:first-child'), row_tds, 'height');
+						// (options.autoRowHeight && (options.rowNum || frozen_tds.length)) && align_td(tables.eq(0).find('td:first-child'), row_tds, 'height');
 						(options.autoRowHeight && (options.rowNum || frozen_tds.length)) && align_td(tables.eq(1).find('td:first-child'), col_tds, 'height');
 						(options.rowNum && !options.autoColWidth) && align_td(tables.eq(0).find('tr:first-child td:first-child'), tables.eq(1).find('tr:first-child td:first-child'), 'width');
 
