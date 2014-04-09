@@ -17,7 +17,8 @@
 .icon-chart{background:url("../img/chart.png");}
 .icon-user{background:url("../img/user.png");}
 .icon-money{background:url("../img/money.png");}
-.menu-container{position:absolute;width:98px;_width:100px;background:white;border:1px solid #aaa;}
+.menu-container{position:absolute;background:white;}
+.menu-container .wraper{border:1px solid #aaa;width:98px;_width:100px;}
 .menu-container .menu-vertical-line{position:absolute;top:0;left:22px;height:100%;border-left:1px solid #ccc;}
 .menu-container ul li{list-style:none;float:left;width:100%;}
 .menu-container li{height:22px;}
@@ -44,32 +45,41 @@ try {
 	document.execCommand('BackgroundImageCache', false, true);
 }catch(e){}
 var my_menu = $('#my_menu').menu({
+	width: 100,
 	data: [
 		{name:'chart', icon:'chart', text:'流量'},
 		{name:'takein', icon:'money', text:'收入'},
 		{name:'user', icon:'user', disabled:true, text:'用户'},
-		{name:'sub', text:'Sub', children:[
-			{name:'chart2', icon:'chart', text:'流量2'},
-			{name:'takein2', icon:'money', text:'收入2', children:[
-				{name:'chart3', icon:'chart', text:'流量3'},
-				{name:'takein3', icon:'money', text:'收入3'},
-				{name:'user3', icon:'user', text:'用户3'},
-				{name:'test3', text:'测试3', disabled:true},
+		{name:'sub', text:'Sub', sub:{
+			width: 200,
+			data:[
+				{name:'chart2', icon:'chart', text:'流量2222'},
+				{name:'takein2', icon:'money', text:'收入2', sub:{
+					data:[
+						{name:'chart3', icon:'chart', text:'流量'},
+						{name:'takein3', icon:'money', text:'收入3'},
+						{name:'user3', icon:'user', text:'用户3'},
+						{name:'test3', text:'测试3', disabled:true},
+						{'class':'separate'},
+						{name:'exit3', text:'退出3'}
+					]
+				}},
+				{name:'user2', icon:'user', text:'用户2'},
+				{name:'test2', text:'测试2', sub:{
+					width: 300,
+					data: [
+						{name:'chart3', icon:'chart', text:'流量333333333333333333333333333333333333'},
+						{name:'takein3', icon:'money', text:'收入3'},
+						{name:'user3', icon:'user', text:'用户3'},
+						{name:'test3', text:'测试3', disabled:true},
+						{'class':'separate'},
+						{name:'exit3', text:'退出3'}
+					]
+				}},
 				{'class':'separate'},
-				{name:'exit3', text:'退出3'}
-			]},
-			{name:'user2', icon:'user', text:'用户2'},
-			{name:'test2', text:'测试2', disabled:true, children:[
-				{name:'chart3', icon:'chart', text:'流量3'},
-				{name:'takein3', icon:'money', text:'收入3'},
-				{name:'user3', icon:'user', text:'用户3'},
-				{name:'test3', text:'测试3', disabled:true},
-				{'class':'separate'},
-				{name:'exit3', text:'退出3'}
-			]},
-			{'class':'separate'},
-			{name:'exit', text:'退出2'}
-		]},
+				{name:'exit', text:'退出2'}
+			]
+		}},
 		{'class':'separate'},
 		{name:'exit', text:'退出'}
 	],

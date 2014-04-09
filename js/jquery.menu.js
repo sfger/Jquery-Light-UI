@@ -39,8 +39,17 @@ $.fn.menu=function(options){
 				box.addClass('menu-container clearfix').hide();
 				this.container = box.get(0);
 				this.menuitems = {};
-				var createMenu = function(data){
+				var createMenu = function(option){
+					var data = option.data;
 					var wraper = document.createElement('div');
+					wraper.className = 'wraper';
+					if(option.width){
+						if(document.documentMode===5 || /MSIE 6/.test(navigator.userAgent)){
+							wraper.style.width = option.width + 2 + 'px';
+						}else{
+							wraper.style.width = option.width + 'px';
+						}
+					}
 					wraper.style.position = 'relative';
 					wraper.innerHTML = '<div class="menu-vertical-line"></div>';
 					var ul = document.createElement('ul');
@@ -55,7 +64,7 @@ $.fn.menu=function(options){
 							line = document.createElement('a');
 							var icon = document.createElement('span');
 							var text = document.createElement('span');
-							if(data[i].children && data[i].children.length){
+							if(data[i].sub && data[i].sub.data && data[i].sub.data.length){
 								var sub_tag = document.createElement('span');
 								sub_tag.className = "sub-tag";
 								line.appendChild(sub_tag);
@@ -72,7 +81,7 @@ $.fn.menu=function(options){
 						}
 						line.option = data[i];
 						li.appendChild(line);
-						if(data[i].children && data[i].children.length){
+						if(data[i].sub && data[i].sub.data && data[i].sub.data.length){
 							var sub_container = document.createElement('div');
 							sub_container.style.display = 'none';
 							if(document.documentMode===5 || /MSIE 6/.test(navigator.userAgent)){
@@ -82,8 +91,8 @@ $.fn.menu=function(options){
 								sub_container.style.position = 'relative';
 								sub_container.style.top = '-22px';
 							}
-							sub_container.style.left = '97px';
-							sub_container.appendChild(createMenu(data[i].children));
+							sub_container.style.left = option.width - 2 + 'px';
+							sub_container.appendChild(createMenu(data[i].sub));
 							sub_container.className = 'menu-container clearfix';
 							li.appendChild(sub_container);
 						}
@@ -92,7 +101,7 @@ $.fn.menu=function(options){
 					wraper.appendChild(ul);
 					return wraper;
 				};
-				var w = $(createMenu(options.data)).appendTo(box);
+				var w = $(createMenu(options)).appendTo(box);
 				box.on({
 					mouseenter: function(){
 						if(this.showMenuTimer) clearTimeout(this.showMenuTimer);
