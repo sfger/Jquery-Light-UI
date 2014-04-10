@@ -235,7 +235,7 @@ $.fn.datagrid=function(options){
 						if(!rows) return ret;
 						var ii = rows.length - 1;
 						for(var i=ii; i>=0; i--){
-							ret.push(createElement({name:'tr', children:(function(){
+							ret.unshift(createElement({name:'tr', children:(function(){
 								var nodes = [];
 								for(var j=rows[i].length-1; j>=0; j--){
 									var option = rows[i][j];
@@ -245,12 +245,13 @@ $.fn.datagrid=function(options){
 									if(option.rowspan) td_attr.rowspan = option.rowspan;
 									if(option.colspan) td_attr.colspan = option.colspan;
 									var colspan = option.colspan || 1;
-									if(colspan==1) that[colsType].push(option);
+									if(colspan==1) that[colsType].unshift(option);
 									nodes.unshift(createElement({
 										name:'td', attr:td_attr, children:{
 											name:'div', attr:{className:'cell', style:{width:width}}, children:title
 										}
 									}));
+									option.fieldElement = nodes[0].children[0];
 								}
 								if(isFrozen && i==0 && options.rowNum){
 									nodes.unshift(createElement({
@@ -258,12 +259,12 @@ $.fn.datagrid=function(options){
 											name:'div', attr:{className:'cell'}
 										}
 									}));
+									that.rowNumElemt = nodes[0].children[0];
 								}
 								return nodes;
 							})()}));
 						}
-						that[colsType] = that[colsType].reverse();
-						return ret.reverse();
+						return ret;
 					};
 					var get_data_rows = function(data, cols, isLeft){
 						var ret = [];
@@ -323,57 +324,56 @@ $.fn.datagrid=function(options){
 				};
 				// }}}
 
-				//fn align_table{{{
-				var align_table = function(tables){
+				//fn adjust_table{{{
+				var getHW = function(el, type){
+					return (document.documentMode<7 || /MSIE 6/.test(navigator.userAgent))
+						? el['offset'+('width'==type ? 'Width' : 'Height')]
+						: $(el)[type]();
+				}
+				var align_table = function(a, b){
+					$(a).each(function(i, one){
+						var t1 = this.offsetHeight;
+						var t2 = b[i].offsetHeight;
+						var t = t1<t2 ? t2 : t1;
+						$([this, b[i]]).height(t);
+					});
+				};
+				var align_tr = align_table;
+				var align_td = function(a, type, isFrozen){
+					$.each(a, function(i, one){
+						var field = that[isFrozen?'frozenColumns':'columns'][i].fieldElement.children[0]
+						var t1  = getHW(this, type),
+							t2  = getHW(field, type);
+						if(t1<t2) $(this)[type](t2);
+						else $(field)[type](t1);
+					});
+				};
+				var adjust_table = function(tables){
 					if(tables.length==4){
 						var tp0 = tables.eq(2).parent(),
 							tp1 = tables.eq(3).parent();
 						tp0.css({width:500000});
 						tp1.css({width:500000});
-						var getHW = function(el, type){
-							return (document.documentMode===5 || /MSIE 6/.test(navigator.userAgent))
-								? el['offset'+('width'==type ? 'Width' : 'Height')] + 1
-								: $(el)[type]();
-						}
-						var align_td = function(a, b, type){
-							$.each(a, function(i, one){
-								if(this.getAttribute('rowspan') > 1 && type=='height') return true;
-								if(this.getAttribute('colspan') > 1 && type=='width') return true;
-								var t1  = getHW(this.children[0], type),
-									t1p = getHW(this, type),
-									t2  = getHW(b[i].children[0], type),
-									t2p = getHW(b[i], type);
-								var s = type==="height" ? true: false;
-								if(t1<t1p) t1 = t1p;
-								if(t2<t2p) t2 = t2p;
-								var t = t1<t2 ? t2 : t1;
-								$(this.children[0])[type](t);
-								$(b[i].children[0])[type](t);
-								if(s){
-									$(this)[type]($(this)[type]());
-									$(this.children[0])[type]('auto');
-									$(b[i])[type]($(b[i])[type]());
-									$(b[i].children[0])[type]('auto');
-								}
-								// if(t1<t2) $(this.children[0])[type](t2);
-								// else $(b[i].children[0])[type](t1);
-							});
-						};
-						var data_tds = tables.eq(3).find('tr:first-child td'),
-							col_tds  = tables.eq(3).find('tr td:first-child'),
-							row_tds  = tables.eq(2).find('td:first-child');
-						// col_tds.length && align_td(tables.eq(1).find('tr:first-child td'), col_tds, 'height');
-						(options.autoColWidth && data_tds.length) && align_td(tables.eq(2).find('tr:last-child td'), data_tds, 'width');
-						var frozen_tds = tables.eq(1).find('tr:last-child td');
-						(options.autoColWidth && frozen_tds.length) && align_td(tables.eq(0).find('tr:first-child td'), frozen_tds, 'width');
-						// (options.autoRowHeight && (options.rowNum || frozen_tds.length)) && align_td(tables.eq(0).find('td:first-child'), row_tds, 'height');
-						(options.autoRowHeight && (options.rowNum || frozen_tds.length)) && align_td(tables.eq(1).find('td:first-child'), col_tds, 'height');
-						(options.rowNum && !options.autoColWidth) && align_td(tables.eq(0).find('tr:first-child td:first-child'), tables.eq(1).find('tr:first-child td:first-child'), 'width');
+						align_table($([tables[0], tables[1]]), $([tables[2], tables[3]]));
+						if(options.rowNum)
+							tables.eq(0).find('td:first .cell').width( getHW(tables.eq(1).find('td:first .cell').get(0), 'width') );
+						if(options.autoColWidth && that.frozenColumns.length)
+							align_td(tables.eq(1).find('tr:first-child td:not(:first) .cell'), 'width', true);
+						if(options.autoColWidth && that.columns.length)
+							align_td(tables.eq(3).find('tr:first-child td .cell'), 'width');
+						if(options.autoRowHeight && (options.rowNum || that.frozenColumns.length))
+							align_tr(tables.eq(1).find('tr'), tables.eq(3).find('tr'));
 
-						var width = tables.eq(3).width() + 2;
+						var width = tables.eq(3).width();
 						tp1.width(width);
 						tables.eq(2).css('width', width);
 						tables.eq(3).css('width', width);
+
+						// var fie = /MSIE/.test(navigator.userAgent);
+						// var height = tables.eq(3).height() + fie ? options.data.length*3 :0 ;
+						// tables.eq(1).css('height', height);
+						// tables.eq(3).css('height', height);
+
 						var width_full = document.compatMode === "CSS1Compat" ? 'auto' : '100%';
 						tp1.css({width:width_full});
 						tp0.parent().css({width:width_full, overflow:'hidden'});
@@ -386,21 +386,18 @@ $.fn.datagrid=function(options){
 				//}}}
 
 				$(get_table(options.data)).appendTo(box);
-				align_table($('table', box));
+				adjust_table($('table', box));
 				if(document.documentMode===5 || /MSIE 6/.test(navigator.userAgent)){
 					box.find('.view').css({height: $('.head-wrapper').get(0).offsetHeight + $('.body-wrapper').get(0).offsetHeight})// css height:100% fix,
 						.eq(0).css({width:box.find('.view').eq(0).find('table').eq(0).width()});// css display:inline fix
 
 					// css selector fix
 					$('.body-wrapper table, .body-wrapper table tr:first-child td', box).css({borderTop:'none'});
-					box.delegate('tr', {// css tr:hover fix
-						mouseenter: function(){
-							this.style.backgroundColor = '#e6e6e6';
-						},
-						mouseleave: function(){
-							this.style.backgroundColor = 'transparent';
-						}
-					});
+					var hover_binds = {// css tr:hover fix
+						mouseenter: function(){ this.style.backgroundColor = '#e6e6e6'; },
+						mouseleave: function(){ this.style.backgroundColor = 'transparent'; }
+					};
+					box.delegate('.head td', hover_binds).delegate('.body tr', hover_binds);
 				}
 				+function(){// css selector fix
 					var fie = navigator.userAgent.match(/MSIE (\d*)/);
