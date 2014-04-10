@@ -162,14 +162,24 @@ if(typeof Array.prototype.every != "function"){
 // }}}
 
 // fn createElement {{{
-var createElement = function(node){
+var createElement = function(node, container){
 	var ret = document.createDocumentFragment(),
 		fn = createElement,
 		node_type = getType(node),
 		text = {String:1, Number:1},
 		hasOwnProperty = Object.prototype.hasOwnProperty;
+	if(!(container && container.nodeType && container.nodeName)){
+		container = document.getElementById('createElementContainer');
+		if(!container){
+			container = document.createElement('div');
+			container.style.display = 'none';
+			container.id = 'createElementContainer';
+			document.body.appendChild(container);
+		}
+	}
+	container.appendChild(ret);
 	if(node_type === 'Array'){
-		for(var i in node) ret.appendChild(fn(node[i]));
+		for(var i in node) ret.appendChild(fn(node[i]), container);
 	}else if(text[node_type]){
 		ret.appendChild(document.createTextNode(node));
 	}else if(node.nodeType && node.nodeName){
@@ -177,6 +187,7 @@ var createElement = function(node){
 	}else if(node_type==='Object' && node.name){
 		var element = document.createElement(node.name),
 			attr = node.attr, children = node.children;
+		ret.appendChild(element);
 		if(attr){
 			for(var key in attr){
 				if(key in {'class':1, 'className':1}){
@@ -199,9 +210,8 @@ var createElement = function(node){
 		}
 		if(children){
 			if(text[getType(children)]) element.innerHTML = children;
-			else element.appendChild(fn(children));
+			else element.appendChild(fn(children, container));
 		}
-		ret.appendChild(element);
 	}
 	if(!ret.children) ret.children = ret.childNodes;
 	return ret;
