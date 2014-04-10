@@ -223,6 +223,7 @@ $.fn.datagrid=function(options){
 				var that = this;
 				that.frozenColumns = [];
 				that.columns = [];
+				that.fieldElements = [];
 				this.userOptions = options;
 				box.addClass('datagrid-container clearfix');
 				this.container = box.get(0);
@@ -234,24 +235,27 @@ $.fn.datagrid=function(options){
 						var colsType = isFrozen ? 'frozenColumns' : 'columns';
 						if(!rows) return ret;
 						var ii = rows.length - 1;
+						var fieldElements = [];
 						for(var i=ii; i>=0; i--){
 							ret.unshift(createElement({name:'tr', children:(function(){
 								var nodes = [];
 								for(var j=rows[i].length-1; j>=0; j--){
 									var option = rows[i][j];
 									var title = (option.name || option.field || '');
-									var width = options.autoColWidth ? 'auto' : ((option.width||options.colWidth) + 'px');
+									var width = (options.autoColWidth||option.colspan) ? 'auto' : ((option.width||options.colWidth) + 'px');
 									var td_attr = {};
 									if(option.rowspan) td_attr.rowspan = option.rowspan;
 									if(option.colspan) td_attr.colspan = option.colspan;
 									var colspan = option.colspan || 1;
-									if(colspan==1) that[colsType].unshift(option);
 									nodes.unshift(createElement({
 										name:'td', attr:td_attr, children:{
 											name:'div', attr:{className:'cell', style:{width:width}}, children:title
 										}
 									}));
-									option.fieldElement = nodes[0].children[0];
+									if(colspan==1){
+										fieldElements.unshift(nodes[0].children[0]);
+										that[colsType].unshift(option);
+									}
 								}
 								if(isFrozen && i==0 && options.rowNum){
 									nodes.unshift(createElement({
@@ -259,11 +263,12 @@ $.fn.datagrid=function(options){
 											name:'div', attr:{className:'cell'}
 										}
 									}));
-									that.rowNumElemt = nodes[0].children[0];
+									fieldElements.unshift(nodes[0].children[0]);
 								}
 								return nodes;
 							})()}));
 						}
+						Array.prototype.push.apply(that.fieldElements, fieldElements);
 						return ret;
 					};
 					var get_data_rows = function(data, cols, isLeft){
@@ -330,22 +335,25 @@ $.fn.datagrid=function(options){
 						? el['offset'+('width'==type ? 'Width' : 'Height')]
 						: $(el)[type]();
 				}
-				var align_table = function(a, b){
+				var align_table = function(a, b, type){
+					var st = type==='width' ? 'Width' : 'Height';
 					$(a).each(function(i, one){
-						var t1 = this.offsetHeight;
-						var t2 = b[i].offsetHeight;
+						var t1 = this['offset' + st];
+						var t2 = b[i]['offset' + st];
 						var t = t1<t2 ? t2 : t1;
-						$([this, b[i]]).height(t);
+						$([this, b[i]])[type](t);
 					});
 				};
 				var align_tr = align_table;
-				var align_td = function(a, type, isFrozen){
+				var align_td = function(a, type){
 					$.each(a, function(i, one){
-						var field = that[isFrozen?'frozenColumns':'columns'][i].fieldElement.children[0]
+						var field = that.fieldElements[i].children[0]
 						var t1  = getHW(this, type),
 							t2  = getHW(field, type);
 						if(t1<t2) $(this)[type](t2);
 						else $(field)[type](t1);
+						// var t = t1<t2 ? t2 : t1;
+						// $([this, field])[type](t);
 					});
 				};
 				var adjust_table = function(tables){
@@ -354,25 +362,12 @@ $.fn.datagrid=function(options){
 							tp1 = tables.eq(3).parent();
 						tp0.css({width:500000});
 						tp1.css({width:500000});
-						align_table($([tables[0], tables[1]]), $([tables[2], tables[3]]));
-						if(options.rowNum)
-							tables.eq(0).find('td:first .cell').width( getHW(tables.eq(1).find('td:first .cell').get(0), 'width') );
-						if(options.autoColWidth && that.frozenColumns.length)
-							align_td(tables.eq(1).find('tr:first-child td:not(:first) .cell'), 'width', true);
-						if(options.autoColWidth && that.columns.length)
-							align_td(tables.eq(3).find('tr:first-child td .cell'), 'width');
-						if(options.autoRowHeight && (options.rowNum || that.frozenColumns.length))
-							align_tr(tables.eq(1).find('tr'), tables.eq(3).find('tr'));
-
-						var width = tables.eq(3).width();
-						tp1.width(width);
-						tables.eq(2).css('width', width);
-						tables.eq(3).css('width', width);
-
-						// var fie = /MSIE/.test(navigator.userAgent);
-						// var height = tables.eq(3).height() + fie ? options.data.length*3 :0 ;
-						// tables.eq(1).css('height', height);
-						// tables.eq(3).css('height', height);
+						align_table($([tables[0], tables[1]]), $([tables[2], tables[3]]), 'height');
+						if(options.autoColWidth){
+							var list = tables.filter('table:odd').find('tr:first-child td .cell');
+							align_td($(list), 'width', true);
+						}
+						align_table($([tables[0], tables[2]]), $([tables[1], tables[3]]), 'width');
 
 						var width_full = document.compatMode === "CSS1Compat" ? 'auto' : '100%';
 						tp1.css({width:width_full});
