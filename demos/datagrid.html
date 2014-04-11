@@ -16,16 +16,17 @@
 .clearfix{*zoom:1;}
 .datagrid-container{overflow:hidden;}
 .datagrid-container .view-wrapper{position:relative;}
-.datagrid-container .view{display:inline-block;*display:inline;*zoom:1;/*width:100%;*/vertical-align:top;}
+.datagrid-container .view{display:inline-block;*display:inline;*zoom:1;vertical-align:top;}
 .datagrid-container .head-wrapper{overflow:hidden;}
 .datagrid-container .body-wrapper{height:320px;overflow:auto;}
 .datagrid-container table{border:1px solid #ccc;border-collapse:collapse;}
 .datagrid-container td{border:1px solid #ccc;overflow:hidden;}
-.datagrid-container .body-wrapper table, .datagrid-container .body-wrapper table tr:first-child td{border-top:none;}
-.datagrid-container .view:last-child table, .datagrid-container .view:last-child table td:first-child{border-left:none;}
+.datagrid-container .body-wrapper table, .datagrid-container .body-wrapper tr:first-child td{border-top:none;}
+.datagrid-container .view:last-child table, .datagrid-container .view:last-child td:first-child{border-left:none;}
 .datagrid-container .head td:hover{background:#e6e6e6;}
 .datagrid-container .body tr:hover{background:#e6e6e6;}
 .datagrid-container .cell{color:#666;height:20px;_height:22px;overflow:hidden;text-align:center;line-height:20px;white-space:nowrap;padding:1px 3px;}
+.datagrid-container .field{cursor:pointer;}
 .datagrid-container .autoRowHeight .cell{height:auto;}
 #my_datagrid{width:auto;_width:100%;border:1px solid green;}
 </style>
@@ -49,9 +50,11 @@ var my_datagrid = $('#my_datagrid').datagrid({
 	data:data,
 	rowNum:true,
 	autoRowHeight:true,
-	autoColWidth:true,
+	autoColWidth:false,
 	frozenColumns:[
-		[{name:'固定列', colspan:4}],
+		[
+			{name:'固定列', colspan:4}
+		],
 		/*
 		[
 			{name:'固定列组1', colspan:2},
