@@ -214,6 +214,7 @@ $.fn.datagrid=function(options){
 		var handler = function(box, options){
 			return new handler.prototype.init(box, options);
 		};
+		var push = Array.prototype.push;
 		// fn get_table{{{
 		var get_table = function(options, that){
 			var get_head_rows = function(rows, isFrozen){
@@ -263,13 +264,27 @@ $.fn.datagrid=function(options){
 					ret.push(createElement({
 						name:'tr', children:(function(){
 							var nodes = [];
-							if(options.rowNum && isLeft)
-								nodes.push(createElement({name:'td', children:{name:'div', attr:{className:'cell'}, children:i+1}}));
+							if(options.rowNum && isLeft){
+								nodes.push(createElement({
+									name:'td', children:{
+										name:'div', attr:{className:'cell'}, children:i+1
+									}
+								}));
+							}
 							cols && cols.forEach(function(option, ii){
 								if(!option) return true;
-								var field = option.field, val = row[field], formatter = option.formatter;
-								var show = getType(formatter)==='Function' ? formatter(val, row, field) : val;
-								nodes.push(createElement({name:'td', children:{name:'div', attr:{className:'cell', style:{width:options.autoColWidth ? 'auto' : ((option.width||options.colWidth) + 'px')}}, children:show}}));
+								var field = option.field,
+									val = row[field],
+									formatter = option.formatter;
+								nodes.push(createElement({
+									name:'td', children:{
+										name:'div', attr:{
+											className:'cell',
+											style:{width:options.autoColWidth ? 'auto' : ((option.width||options.colWidth) + 'px')}
+										}, children:
+											 getType(formatter)==='Function' ? formatter(val, row, field) : val
+									}
+								}));
 							});
 							return nodes;
 						})()
@@ -373,15 +388,15 @@ $.fn.datagrid=function(options){
 			init: function(box, options){
 				var document = window.document;
 				var that = this;
-				that.frozenColumns = [];
-				that.columns = [];
-				that.fieldElements = [];
+				this.columns = [];
+				this.frozenColumns = [];
 				this.userOptions = options;
-				box.addClass('datagrid-container clearfix');
 				this.container = box.get(0);
+				box.addClass('datagrid-container clearfix');
 				$(get_table(options, that)).appendTo(box);
-				that.fieldElements = $('.field .cell', box);
+				this.fieldElements = $('.field .cell', box);
 				adjust_table($('table', box), that);
+
 				if(document.documentMode===5 || /MSIE 6/.test(navigator.userAgent)){
 					box.find('.view').css({height: $('.head-wrapper').get(0).offsetHeight + $('.body-wrapper').get(0).offsetHeight})// css height:100% fix,
 						.eq(0).css({width:box.find('.view').eq(0).find('table').eq(0).width()});// css display:inline fix
@@ -404,6 +419,44 @@ $.fn.datagrid=function(options){
 				$(window).on('resize', function(){ that.resize(); });
 				$(window).resize();
 				setTimeout(function(){ $(window).resize(); }, 0);
+
+				var allColumns = [];
+				push.apply(allColumns, this.frozenColumns);
+				push.apply(allColumns, this.columns);
+				this.allColumns = allColumns;
+				box.delegate('.field', {
+					click: function(e){
+						var i = that.fieldElements.index(this.children[0]);
+						var options = that.userOptions;
+						if(options.rowNum && i===0) return false;
+						var fieldOption = that.allColumns[i-1];
+						var tbodys = $('.body tbody', box);
+						if(!(options.data[0].tr && options.data[0].frozenTr)){
+							options.data.forEach(function(rowData, rowNum){
+								if(options.frozenColumns.length)
+									rowData.frozenTr = tbodys.get(0).rows[rowNum];
+								rowData.tr = tbodys.get(1).rows[rowNum];
+							});
+						}
+						var fieldName = fieldOption.field;
+						this.fieldName = fieldName;
+						this.sortDesc = !this.sortDesc;
+						var sortFn = fieldOption.sort || function(a, b){
+							var c;
+							a = a[fieldName], b = b[fieldName];
+							if(!this.sortDesc) c = a, a = b, b = c;
+							return a==b ?0 : (b>a ? 1 : -1);
+						};
+						options.data.sort(sortFn.bind(this));
+						options.data.forEach(function(rowData, rowNum){
+							if(rowData.frozenTr){
+								rowData.frozenTr.parentNode.appendChild(rowData.frozenTr);
+								rowData.frozenTr.children[0].children[0].innerHTML = rowNum + 1;
+							}
+							rowData.tr.parentNode.appendChild(rowData.tr);
+						});
+					}
+				});
 			},
 			resize: function(){
 				var dataViews = $('.view', this.container);
