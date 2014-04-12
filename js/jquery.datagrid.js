@@ -1,6 +1,8 @@
 "use strict";
+var push = Array.prototype.push;
 var toString = Object.prototype.toString;
 var getType = function(obj){ return toString.call(obj).slice(8, -1); };
+var markChars = {up: '↑', down : '↓', expand:'▼', fold:'▲', empty:'&nbsp;&nbsp;'};
 // Extend ECMAScript5 features {{{
 if(!Object.keys){
 	Object.keys = function(o){
@@ -214,7 +216,6 @@ $.fn.datagrid=function(options){
 		var handler = function(box, options){
 			return new handler.prototype.init(box, options);
 		};
-		var push = Array.prototype.push;
 		// fn get_table{{{
 		var get_table = function(options, that){
 			var get_head_rows = function(rows, isFrozen){
@@ -242,7 +243,8 @@ $.fn.datagrid=function(options){
 							}
 							nodes.unshift(createElement({
 								name:'td', attr:td_attr, children:{
-									name:'div', attr:{className:'cell', style:{width:width}}, children:title
+									name:'div', attr:{className:'cell', style:{width:width}}, children:
+										[markChars.empty, title, {name:'span', attr:{className:'sort-mark'}, children:markChars.empty}]
 								}
 							}));
 						}
@@ -384,6 +386,12 @@ $.fn.datagrid=function(options){
 			}
 		};
 		//}}}
+		var defaultSortFn = function(a, b){
+			var c, field = this.field;
+			a = a[field], b = b[field];
+			if(!this.order) c = a, a = b, b = c;
+			return a==b ?0 : (b>a ? 1 : -1);
+		};
 		handler.prototype = {
 			init: function(box, options){
 				var document = window.document;
@@ -424,37 +432,59 @@ $.fn.datagrid=function(options){
 				push.apply(allColumns, this.frozenColumns);
 				push.apply(allColumns, this.columns);
 				this.allColumns = allColumns;
+				var tbodys = $('.body tbody', box);
+				if(!(options.data[0].tr && options.data[0].frozenTr)){
+					options.data.forEach(function(rowData, rowNum){
+						if(options.frozenColumns.length)
+							rowData.frozenTr = tbodys.get(0).rows[rowNum];
+						rowData.tr = tbodys.get(1).rows[rowNum];
+					});
+				}
+				this.defaultOrder = false; //true:desc, false:asc
 				box.delegate('.field', {
 					click: function(e){
-						var i = that.fieldElements.index(this.children[0]);
+						var fieldIndex = that.fieldElements.index(this.children[0]) - 1;
 						var options = that.userOptions;
-						if(options.rowNum && i===0) return false;
-						var fieldOption = that.allColumns[i-1];
-						var tbodys = $('.body tbody', box);
-						if(!(options.data[0].tr && options.data[0].frozenTr)){
-							options.data.forEach(function(rowData, rowNum){
-								if(options.frozenColumns.length)
-									rowData.frozenTr = tbodys.get(0).rows[rowNum];
-								rowData.tr = tbodys.get(1).rows[rowNum];
-							});
-						}
-						var fieldName = fieldOption.field;
-						this.fieldName = fieldName;
-						this.sortDesc = !this.sortDesc;
-						var sortFn = fieldOption.sort || function(a, b){
-							var c;
-							a = a[fieldName], b = b[fieldName];
-							if(!this.sortDesc) c = a, a = b, b = c;
-							return a==b ?0 : (b>a ? 1 : -1);
-						};
-						options.data.sort(sortFn.bind(this));
-						options.data.forEach(function(rowData, rowNum){
-							if(rowData.frozenTr){
-								rowData.frozenTr.parentNode.appendChild(rowData.frozenTr);
-								rowData.frozenTr.children[0].children[0].innerHTML = rowNum + 1;
-							}
-							rowData.tr.parentNode.appendChild(rowData.tr);
-						});
+						if(options.rowNum && fieldIndex===-1) return false;
+						var fieldOption = that.allColumns[fieldIndex];
+						var field = fieldOption.field;
+						var fieldElement = this;
+						that.sortBy(field, that.sort!==field ? that.defaultOrder : !that.order);
+					}
+				});
+			},
+			sortBy: function(field, order){ //order: true->desc, false->asc
+				var options = this.userOptions;
+				var fieldIndex;
+				var fieldOption = this.allColumns.filter(function(option, i){
+					if(option.field===field){
+						fieldIndex = i +1;
+						return option;
+					}
+				});
+				fieldOption = fieldOption[0];
+				var fieldElement = this.fieldElements[fieldIndex].parentNode;
+				if(this.sort) $('.sort-mark', this.sort.parentNode).html(markChars.empty);
+				$('.sort-mark', fieldElement).html(order?markChars.down:markChars.up)
+				if(this.sort===fieldElement.field && fieldElement.order===order)
+					return false;
+				this.order = fieldElement.order = order;
+				if(this.sort===fieldOption.field && fieldElement.order===!this.defaultOrder){
+					this.sort = fieldElement.field = field;
+					options.data = options.data.reverse();
+				}else{
+					this.sort = fieldElement.field = field;
+					options.data.sort((fieldOption.sort || defaultSortFn).bind(fieldElement));
+				}
+				options.data.forEach(function(rowData, rowNum){
+					var frozenTr = rowData.frozenTr;
+					var tr = rowData.tr;
+					if(frozenTr){
+						frozenTr.parentNode.appendChild(frozenTr);
+						frozenTr.children[0].children[0].innerHTML = rowNum + 1;
+					}
+					if(tr){
+						tr.parentNode.appendChild(tr);
 					}
 				});
 			},
