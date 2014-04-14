@@ -14,17 +14,16 @@
 .clearfix{*zoom:1;}
 .iblock {display:inline-block;*display:inline;*zoom:1;}
 #page{height:1000px;}
-.button{vertical-align:middle;font-weight:bold;color:#1e1e1e;}
-a.button{background:#eee;}
-input.button{height:25px;padding:0 8px;}
-a.button{text-decoration:none;display:inline-block;*display:inline;*zoom:1;height:18px;_height:25px;line-height:18px;padding:3px 12px 2px;font-size:12px;border-radius:3px;font-weight:bold;border:1px solid #7e7e7e;overflow:hidden;}
-a.button:hover{border-color:#0074bc;outline:none;}
-.button:active{position:relative;top:1px;left:1px;box-shadow:0 -11px 5px #99ccee inset;}
+.btn, .btn-normal{vertical-align:middle;font-weight:bold;border-radius:3px;color:black;background:none;text-decoration:none;display:inline-block;font-size:12px;border:none;outline:none;*display:inline;*zoom:1;overflow:visible;font-weight:normal;margin:0 3px;padding:0 12px;height:25px;width:auto;*width:1;line-height:1.5;cursor:pointer;}
+a.btn{border:1px solid #7e7e7e;width:auto;line-height:2;}
+.btn-sl{height:22px;line-height:22px;}
+.btn-success{background-color:green;color:white;}
+.btn-success:active{background-image:none;color:#cacaca;}
 .window-container{display:none;position:fixed;z-index:50;top:0;left:0;background:black;opacity:0.6;filter:alpha(opacity=60);}
-.window-wrapper{width:400px;height:260px;overflow:hidden;position:absolute;margin:auto;background:white;box-shadow:0px 5px 15px white;}
-.window-container .window-bar{background:#aaa;padding:5px 8px;text-align:right;height:27px;line-height:27px;}
-//.window-container .footer{background:;}
-.window-container .closer{transition:all 0.5s ease-out 0s;font-family:宋体;padding:3px 4px 2px;background:none;border:none;}
+.window-wrapper{width:400px;height:260px;overflow:hidden;position:absolute;margin:auto;background:white;/*box-shadow:3px 3px 3px #defefe;*/}
+.window-container .window-bar{background:#b2b2b2;padding:3px 8px;text-align:right;height:20px;_height:26px;line-height:20px;overflow:hidden;}
+.window-container .footer{padding:2px 8px;height:22px;_height:26px;}
+.window-container .closer{transition:all 0.5s ease-out 0s;font-family:宋体;padding:0;border:none;}
 .window-container .closer:hover{transform:rotate(360deg);-webkit-transform:rotate(360deg);background:none;border:none;}
 .window-container .closer:active{box-shadow:none;}
 .window-container .contents{padding:2px 1px 2px 5px;overflow:auto;text-align:left;}
@@ -32,14 +31,14 @@ a.button:hover{border-color:#0074bc;outline:none;}
 </head>
 <body>
 <div id="page">
-    <a id="button" href="javascript:;">popup</a>
+    <a id="btn" class="btn" href="javascript:;">打开窗口</a>
 	<div class="my-window">
-		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
-		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
-		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
-		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
-		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
-		a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br /> a<br />
+		content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+		content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+		content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+		content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+		content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+		content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
 	</div>
 </div><!-- #page end! -->
 <script type="text/javascript" src="../jquery.min.js"></script>
@@ -58,14 +57,14 @@ var m_window = $('.my-window').window({
 	},
 	footer:{
 		formatter: function(){
-			return '<input type="button" class="button" value="确定">' +
-				'<input type="button" class="button" value="取消">';
+			return '<input type="button" class="btn btn-sl btn-success" value="确定">' +
+				'<input type="button" class="btn btn-sl btn-success" value="取消">';
 				//'<a href="javascript:;" class="button">确定</a>' +
 				//'<a href="javascript:;" class="button">取消</a>';
 		}
 	}
 });
-$('#button').on('click', function(){
+$('#btn').on('click', function(){
 	m_window.show();
 });
 </script>

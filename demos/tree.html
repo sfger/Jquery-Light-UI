@@ -41,6 +41,7 @@
 	<div id="my_tree"></div>
 </div><!-- #page end! -->
 <script type="text/javascript" src="../jquery.min.js"></script>
+<script type="text/javascript" src="../js/ecma5shim.js"></script>
 <script type="text/javascript" src="../js/jquery.tree.js"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -51,11 +52,11 @@ $('#my_tree').tree({
 	data: data,
 	animate: {time:115},
 	onClick: function(e){
-		alert('onClick');
+		// alert('onClick');
 		return false;
 	},
 	onContextmenu: function(e){
-		alert('onContextmenu');
+		// alert('onContextmenu');
 		return false;
 	}
 });

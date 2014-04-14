@@ -1,5 +1,5 @@
-(function($){
 "use strict";
+(function($){
 $.fn.window=function(options){
 	options = $.extend(true, {
 		title: 'title',
@@ -16,7 +16,7 @@ $.fn.window=function(options){
 					'<div class="window-wrapper clearfix">' +
 						'<div class="window-bar header clearfix">' +
 							'<span class="title" style="float:left">Title</span>' +
-							'<a href="javascript:;" class="button closer">×</a>' +
+							'<a href="javascript:;" class="btn closer">×</a>' +
 						'</div>' +
 						'<div class="contents"></div>' +
 						(options.footer.formatter ? (function(){
@@ -88,13 +88,15 @@ $.fn.window=function(options){
 					height: (wraper.clientHeight>viewHeight ? viewHeight : wraper.clientHeight)
 						- $('.header', wraper).get(0).offsetHeight
 						- (this.userOptions.footer.formatter ? $('.footer', wraper).get(0).offsetHeight : 0)
-						- parseInt($contents.css('paddingTop'))
-						- parseInt($contents.css('paddingBottom'))
+						- (isIE6 || !css1compat ? 0 : parseInt($contents.css('paddingTop')))
+						- (isIE6 || !css1compat ? 0 : parseInt($contents.css('paddingBottom')))
 				});
 				return this;
 			},
 			resize: function(){
 				if( $(document.body).css('overflow')!=='hidden' ) return false;
+				var css1compat = document.compatMode === "CSS1Compat";
+				var isIE6      = /MSIE 6.0/.exec(navigator.userAgent);
 				var viewWidth   = this.getViewWidth(),
 					viewHeight  = this.getViewHeight(),
 					wraper      = this.wraper,
@@ -110,8 +112,8 @@ $.fn.window=function(options){
 					height: (wraper.clientHeight>viewHeight ? viewHeight : wraper.clientHeight)
 						- $('.header', wraper).get(0).offsetHeight
 						- (this.userOptions.footer.formatter ? $('.footer', wraper).get(0).offsetHeight : 0)
-						- parseInt($contents.css('paddingTop'))
-						- parseInt($contents.css('paddingBottom'))
+						- (isIE6 || !css1compat ? 0 : parseInt($contents.css('paddingTop')))
+						- (isIE6 || !css1compat ? 0 : parseInt($contents.css('paddingBottom')))
 				});
 				return this;
 			},
