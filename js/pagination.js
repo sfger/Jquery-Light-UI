@@ -78,7 +78,7 @@
                             if(i==cur) this.appendPlainChild(i);
                             else this.getNaviNode(url,i,i);
                     }
-                    if(page-cur<hf+2){
+                    if(page-cur<hf+3){
                         for(i=cur+1;i<=page;i++)
                             if(i==cur) this.appendPlainChild(i);
                             else this.getNaviNode(url,i,i);
