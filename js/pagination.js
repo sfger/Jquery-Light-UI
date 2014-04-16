@@ -51,7 +51,12 @@
 				// if(!this.userOptions.useAjax){
 					url = url.replace(this.pageNumberRegExp, "$1"+page);
 				// }
-                url='<a href="'+url+'" class="pn">'+show+'</a>';
+				var c = (function(){
+					if(show==='上一页') return ' prev';
+					else if(show==='下一页') return ' next';
+					else return '';
+				})();
+                url='<a href="'+url+'" class="pn'+c+'">'+show+'</a>';
                 this.navi.innerHTML += url;
             },
             appendPlainChild:function(text){

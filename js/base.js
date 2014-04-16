@@ -4,6 +4,7 @@ var light = {
 		markChars:{up: '↑', down : '↓', expand:'▼', fold:'▲', empty:'&nbsp;&nbsp;'}
 	},
 	util:{
+		slice:Array.prototype.slice,
 		push:Array.prototype.push,
 		toString:Object.prototype.toString,
 		getType:function(obj){ return light.ui.toString.call(obj).slice(8, -1); },
