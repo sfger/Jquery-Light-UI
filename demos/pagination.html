@@ -15,6 +15,7 @@
 .clearfix:after{clear:both;overflow:hidden;}
 .clearfix{*zoom:1;}
 .pagination-container{padding:1px;vertical-align:middle;}
+.pagination-container .pc{display:inline-block;*display:inline;*zoom:1;}
 .pagination-container a{color:black;text-decoration:none;vertical-align:middle;padding:2px 8px;display:inline-block;*display:inline;*zoom:1;border:1px solid #d3d3d3;margin:0 2px;cursor:pointer;}
 .pagination-container .plain{display:inline-block;*display:inline;*zoom:1;border:none;cursor:default;padding:2px;}
 .pagination-container .current{color:red;cursor:default;}
@@ -32,16 +33,65 @@
     <div class="navi"></div>
     <div class="navi"></div>
 </div>
+<script type="text/javascript" src="../js/base.js"></script>
 <script type="text/javascript" src="../js/pagination.js"></script>
 <script type="text/javascript">
 //<![CDATA[
+var Event = {
+	on:function(eventType, target, fn, useCapture){
+		useCapture = (useCapture === undefined) ? true : useCapture;
+		var handler = null;
+		if(window.addEventListener === undefined){
+			eventType = 'on' + eventType;
+			handler = function(eventType, fn){
+				this.attachEvent(eventType, fn);
+				return fn;
+			};
+		}else{
+			handler = function (eventType, fn, useCapture) {
+				this.addEventListener(eventType, fn, useCapture);
+				return fn;
+			};
+		}
+		return handler.apply(target, [
+			eventType,
+			function(e){ fn.call(e.target||e.srcElement, e||event); },
+			useCapture
+		]);
+	},
+	off:function(eventType, target, fn, useCapture){
+		useCapture = (useCapture === undefined) ? true : useCapture;
+		if(window.removeEventListener === undefined) target.detachEvent('on'+eventType, fn);
+		else target.removeEventListener(eventType, fn, useCapture);
+	},
+	stop:function(e){
+		e.cancelBubble = true;
+		if(e.stopPropagation) e.stopPropagation();
+	},
+	prevent:function(e){
+		if(e.preventDefault) e.preventDefault();
+		else e.returnValue = false;
+	}
+};
+window.onload = function(){
+	pagination({
+		useAjax:true,
+		pageNumber:20,
+		renders:getElementsByClassName('navi',document.body),
+		dataSize:501,
+		onChangePage:function(pageNumber, pageCount){
+			//alert(pageNumber);
+		}
+	});
+}
+
 var getElementsByClassName = function(searchClass, node, tag){
     node = node || document, tag = tag ? tag.toUpperCase() : "*";
     if(document.getElementsByClassName){
         var temp = node.getElementsByClassName(searchClass);
         if(tag=="*"){
             return temp;
-        } else {
+        }else{
             var ret = new Array();
             for(var i=0; i<temp.length; i++)
                 if(temp[i].nodeName==tag)
@@ -65,11 +115,6 @@ var getElementsByClassName = function(searchClass, node, tag){
         }
         return returnElements;
     }
-};
-window.onload = function(){
-    var navi = getElementsByClassName('navi',document.body);
-    for(var i=0; i<navi.length; i++)
-        pagination(navi[i],911);
 };
 //]]>
 </script>

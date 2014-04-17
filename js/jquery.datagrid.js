@@ -3,6 +3,7 @@
 $.fn.datagrid=function(options){
 	options = $.extend(true, {
 		colWidth:80,
+		startRowNum:1,
 		data:[]
 	}, options);
 	var handler = (function(){
@@ -67,7 +68,7 @@ $.fn.datagrid=function(options){
 							if(options.rowNum && isLeft){
 								nodes.push(createElement({
 									name:'td', children:{
-										name:'div', attr:{className:'cell'}, children:i+1
+										name:'div', attr:{className:'cell'}, children:i+options.startRowNum
 									}
 								}));
 							}

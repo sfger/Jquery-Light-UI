@@ -7,7 +7,55 @@ var light = {
 		slice:Array.prototype.slice,
 		push:Array.prototype.push,
 		toString:Object.prototype.toString,
+		hasOwnProperty:Object.prototype.hasOwnProperty,
 		getType:function(obj){ return light.ui.toString.call(obj).slice(8, -1); },
+		isWindow:function(obj){ return obj!=null && obj==obj.window; },
+		isPlainObject:function(obj){
+			if(light.util.getType(obj)!=="object" || obj.nodeType || light.util.isWindow(obj)) return false;
+			try{
+				if(obj.constructor && !light.util.call(obj.constructor.prototype, "isPrototypeOf")) return false;
+			}catch(e){
+				return false;
+			}
+			return true;
+		},
+		// method extend {{{
+		extend:function(){
+			var i = 1,
+				target = arguments[0],
+				deep = false,
+				len = arguments.length;
+			if(typeof target=='boolean'){
+				deep = target,
+				target = arguments[i++] || {};
+			}
+			var getType = light.util.getType;
+			var targetType = getType(target);
+			if(!targetType in {"Object":1, "Function":1}) target = {};
+			if(i===len) target = {}, i--;
+			for(; i<len; i++){
+				var options = arguments[i];
+				if(options != null){
+					for(var name in options){
+						var src = target[name],
+							copy = options[name],
+							copyType = getType(copy),
+							srcType = getType(src);
+						if(target === copy) continue;
+						if(deep && copy && (light.util.isPlainObject(copy) && copyType ==='Array')){
+							var clone = (copyType==='Array')
+									? (src && (srcType==='Array') ? src : [])
+									: (src && (light.util.isPlainObject(copy)) ? src : {});
+							target[name] = light.util.extend(deep, clone, copy);
+						}else if(copy!==undefined){
+							target[name] = copy;
+						}
+					}
+				}
+			}
+			return target;
+		},
+		// }}}
 		//method createElement {{{
 		createElement:function(node){
 			var getType = light.util.getType;
@@ -55,4 +103,5 @@ var light = {
 	}
 };
 // }}}
+
 /* vim: set fdm=marker : */
