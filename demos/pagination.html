@@ -28,7 +28,7 @@
 </style>
 </head>
 <body>
-<div>
+<div id="page">
     <div class="navi"></div>
     <div class="navi"></div>
     <div class="navi"></div>
@@ -37,85 +37,20 @@
 <script type="text/javascript" src="../js/pagination.js"></script>
 <script type="text/javascript">
 //<![CDATA[
-var Event = {
-	on:function(eventType, target, fn, useCapture){
-		useCapture = (useCapture === undefined) ? true : useCapture;
-		var handler = null;
-		if(window.addEventListener === undefined){
-			eventType = 'on' + eventType;
-			handler = function(eventType, fn){
-				this.attachEvent(eventType, fn);
-				return fn;
-			};
-		}else{
-			handler = function (eventType, fn, useCapture) {
-				this.addEventListener(eventType, fn, useCapture);
-				return fn;
-			};
-		}
-		return handler.apply(target, [
-			eventType,
-			function(e){ fn.call(e.target||e.srcElement, e||event); },
-			useCapture
-		]);
-	},
-	off:function(eventType, target, fn, useCapture){
-		useCapture = (useCapture === undefined) ? true : useCapture;
-		if(window.removeEventListener === undefined) target.detachEvent('on'+eventType, fn);
-		else target.removeEventListener(eventType, fn, useCapture);
-	},
-	stop:function(e){
-		e.cancelBubble = true;
-		if(e.stopPropagation) e.stopPropagation();
-	},
-	prevent:function(e){
-		if(e.preventDefault) e.preventDefault();
-		else e.returnValue = false;
-	}
-};
-window.onload = function(){
+var a = function(){
 	pagination({
 		useAjax:true,
 		pageNumber:20,
-		renders:getElementsByClassName('navi',document.body),
+		renders:document.getElementById('page').children,
 		dataSize:501,
 		onChangePage:function(pageNumber, pageCount){
 			//alert(pageNumber);
 		}
 	});
-}
-
-var getElementsByClassName = function(searchClass, node, tag){
-    node = node || document, tag = tag ? tag.toUpperCase() : "*";
-    if(document.getElementsByClassName){
-        var temp = node.getElementsByClassName(searchClass);
-        if(tag=="*"){
-            return temp;
-        }else{
-            var ret = new Array();
-            for(var i=0; i<temp.length; i++)
-                if(temp[i].nodeName==tag)
-                    ret.push(temp[i]);
-            return ret;
-        }
-    }else{
-        var classes = searchClass.split(" ");
-        var elements = (tag === "*" && node.all)? node.all : node.getElementsByTagName(tag);
-        var patterns = [], returnElements = [], current, match;
-        var i = classes.length;
-        while(--i >= 0) patterns.push(new RegExp("(^|\\s)" + classes[i] + "(\\s|$)"));
-        var j = elements.length;
-        while(--j >= 0){
-            current = elements[j], match = false;
-            for(var k=0, kl=patterns.length; k<kl; k++){
-                match = patterns[k].test(current.className);
-                if(!match) break;
-            }
-            if(match) returnElements.push(current);
-        }
-        return returnElements;
-    }
 };
+var Event = light.Event;
+Event.on('load', window, a, true);
+//Event.off('load', window, a, true);
 //]]>
 </script>
 </body>

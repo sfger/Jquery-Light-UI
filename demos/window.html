@@ -22,7 +22,7 @@ a.btn{border:1px solid #7e7e7e;width:auto;line-height:2;}
 .window-container{display:none;position:fixed;z-index:50;top:0;left:0;background:black;opacity:0.6;filter:alpha(opacity=60);}
 .window-wrapper{width:400px;height:260px;overflow:hidden;position:absolute;margin:auto;background:white;/*box-shadow:3px 3px 3px #defefe;*/}
 .window-container .window-bar{background:#b2b2b2;padding:3px 8px;text-align:right;height:20px;_height:26px;line-height:20px;overflow:hidden;}
-.window-container .footer{padding:2px 8px;height:22px;_height:26px;}
+.window-container .footer{line-height:1;padding:2px 8px;height:22px;_height:26px;}
 .window-container .closer{transition:all 0.5s ease-out 0s;font-family:宋体;padding:0;border:none;}
 .window-container .closer:hover{transform:rotate(360deg);-webkit-transform:rotate(360deg);background:none;border:none;}
 .window-container .closer:active{box-shadow:none;}
@@ -32,7 +32,7 @@ a.btn{border:1px solid #7e7e7e;width:auto;line-height:2;}
 <body>
 <div id="page">
     <a id="btn" class="btn" href="javascript:;">打开窗口</a>
-	<div class="my-window">
+	<div class="my-window" style="display:none;">
 		content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
 		content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
 		content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br />

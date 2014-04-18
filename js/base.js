@@ -1,8 +1,11 @@
 // light {{{
 var light = {
+	// ui {{{
 	ui:{
 		markChars:{up: '↑', down : '↓', expand:'▼', fold:'▲', empty:'&nbsp;&nbsp;'}
 	},
+	// }}}
+	// util {{{
 	util:{
 		slice:Array.prototype.slice,
 		push:Array.prototype.push,
@@ -100,7 +103,44 @@ var light = {
 			return cd;
 		}
 		//}}}
+	},
+	// }}}
+	// Event {{{
+	Event: {
+		on:function(eventType, target, fn, useCapture){
+			var a = function(eventType, bindFn, useCapture){
+				var w3c = window.addEventListener ? true : false;
+				this[w3c ? 'addEventListener' : 'attachEvent'](
+					(w3c ? '': 'on') + eventType,
+					bindFn,
+					useCapture
+				);
+			};
+			fn.bindEventListener = function(e){ fn.call(e.target||e.srcElement, e||event); };
+			a.apply(target, [
+				eventType,
+				fn.bindEventListener,
+				(useCapture === undefined) ? true : useCapture
+			]);
+		},
+		off:function(eventType, target, fn, useCapture){
+			var w3c = window.removeEventListener ? true : false;
+			target[w3c ? 'removeEventListener' : 'detachEvent'](
+				(w3c ? '': 'on') + eventType,
+				fn.bindEventListener,
+				(useCapture === undefined) ? true : useCapture
+			);
+		},
+		stop:function(e){
+			if(e.stopPropagation) e.stopPropagation();
+			else e.cancelBubble = true;
+		},
+		prevent:function(e){
+			if(e.preventDefault) e.preventDefault();
+			else e.returnValue = false;
+		}
 	}
+	// }}}
 };
 // }}}
 

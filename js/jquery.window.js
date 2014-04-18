@@ -32,7 +32,7 @@ $.fn.window=function(options){
 				this.closer     = $('.closer', w).get(0);
 				this.contents   = $('.contents', w).get(0);
 				this.title		= $('.title', w).html(options.title).get(0);
-				box.appendTo(this.contents);
+				box.show().appendTo(this.contents);
 				var that = this;
 				$(['Height', 'Width']).each(function(i, one){
 					that['getView'+one] = (function () {
