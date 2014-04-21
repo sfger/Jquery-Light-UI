@@ -60,7 +60,7 @@ var fieldSortFns = {
 		return a==b ? 0 :(b-a>0 ? 1: -1);
 	}
 };
-var my_datagrid = $('#my_datagrid').datagrid({
+$('#my_datagrid').datagrid({
 	data:data,
 	rowNum:true,
 	autoRowHeight:true,

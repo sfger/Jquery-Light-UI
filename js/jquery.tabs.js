@@ -31,8 +31,10 @@ $.fn.tabs=function(options){
 			}catch(e){
 				this.titles = [];
 				this.panels = [];
-				for(var i=0,ii=box.children[0].children[0].children.length-1; i<=ii; i++) this.titles.push(box.children[0].children[0].children[i]);
-				for(var i=0,ii=box.children[1].children.length-1; i<=ii; i++) this.panels.push(box.children[1].children[i]);
+				for(var i=0,ii=box.children[0].children[0].children.length-1; i<=ii; i++)
+					this.titles.push(box.children[0].children[0].children[i]);
+				for(var i=0,ii=box.children[1].children.length-1; i<=ii; i++) t
+					is.panels.push(box.children[1].children[i]);
 			}
 			var that = this;
 			var $box = $(box);

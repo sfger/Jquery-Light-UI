@@ -100,10 +100,10 @@ var my_menu = $('#my_menu').menu({
 	onClick: function(item){
 		alert(item.name);
 	}
-});
+}).menu();
 $(document).on({
 	contextmenu: function(e){
-		my_menu.show(e);
+		my_menu[0].show(e);
 		return false;
 	}
 });

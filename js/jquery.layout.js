@@ -1,6 +1,14 @@
 (function($){
 "use strict";
 $.fn.layout=function(options){
+	if(!options){
+		var iLayouts = [];
+		this.each(function(){
+			if(this.ui && this.ui.iLayout) iLayouts.push(this.ui.iLayout);
+			else throw new Error('UI does not init...');
+		});
+		return iLayouts;
+	}
 	options = $.extend(true, {
 		panel: {
 			toggle:true,
@@ -28,20 +36,20 @@ $.fn.layout=function(options){
 		};
 		handler.prototype = {
 			init: function(box, options){
-				this.box = box.get(0);
+				this.box = box;
 				this.userOptions = options;
 				this.panels = {
-					north: box.find('.layout-north').get(0),
-					south: box.find('.layout-south').get(0),
-					west: box.find('.layout-west').get(0),
-					east: box.find('.layout-east').get(0),
-					center: box.find('.layout-center').get(0)
+					north: $('.layout-north', box).get(0),
+					south: $('.layout-south', box).get(0),
+					west: $('.layout-west', box).get(0),
+					east: $('.layout-east', box).get(0),
+					center: $('.layout-center', box).get(0)
 				};
 				this.panelBars = {
-					north: box.find('.bar-north').css({height:options.panelBar.each.north.height||options.panelBar.size}).get(0),
-					south: box.find('.bar-south').css({height:options.panelBar.each.south.height||options.panelBar.size}).get(0),
-					west: box.find('.bar-west').css({width:options.panelBar.each.west.width||options.panelBar.size}).get(0),
-					east: box.find('.bar-east').css({width:options.panelBar.each.east.width||options.panelBar.size}).get(0)
+					north: $('.bar-north', box).css({height:options.panelBar.each.north.height||options.panelBar.size}).get(0),
+					south: $('.bar-south', box).css({height:options.panelBar.each.south.height||options.panelBar.size}).get(0),
+					west: $('.bar-west', box).css({width:options.panelBar.each.west.width||options.panelBar.size}).get(0),
+					east: $('.bar-east', box).css({width:options.panelBar.each.east.width||options.panelBar.size}).get(0)
 				};
 				var that = this;
 				$(['Height', 'Width']).each(function(i, one){
@@ -194,6 +202,10 @@ $.fn.layout=function(options){
 		handler.prototype.init.prototype = handler.prototype;
 		return handler;
 	})();
-	return handler(this, options);
+	return this.each(function(){
+		this.ui = {
+			iLayout: handler(this, $.extend({}, options))
+		}
+	});
 };
 })(jQuery);

@@ -63,9 +63,9 @@ var m_window = $('.my-window').window({
 				//'<a href="javascript:;" class="button">取消</a>';
 		}
 	}
-});
+}).window();
 $('#btn').on('click', function(){
-	m_window.show();
+	m_window[0].show();
 });
 </script>
 </body>
