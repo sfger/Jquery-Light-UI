@@ -14,13 +14,22 @@
 .clearfix:before, .clearfix:after{content:"";display:table;}
 .clearfix:after{clear:both;overflow:hidden;}
 .clearfix{*zoom:1;}
+.icon{width:16px;height:16px;vertical-align:top;*vertical-align:baseline;margin:0 3px;}
+.icon-chart{background:url("../img/chart.png");}
+.icon-user{background:url("../img/user.png");}
+.icon-money{background:url("../img/money.png");}
 .tab-container{border:1px solid #ccc;margin-bottom:10px;}
 .tab-container .header ul{border:none;border-bottom:1px solid #ccc;}
 .tab-container .header li{list-style:none;float:left;}
-.tab-container .header a{text-decoration:none;padding:2px 5px;margin:0 1px;border:1px solid #ccc;border-bottom:1px solid #e6e6e6;position:relative;bottom:-1px;cursor:pointer;color:black;vertical-align:middle;float:left;height:20px;line-height:20px;background:#e6e6e6;}
+.tab-container .header a{text-align:center;text-decoration:none;padding:2px 5px;margin:0 1px;border:1px solid #ccc;border-bottom:1px solid #e6e6e6;position:relative;bottom:-1px;cursor:pointer;color:black;vertical-align:middle;float:left;height:20px;line-height:20px;background:#e6e6e6;}
 .tab-container .header a.current{background:white;border-bottom-color:white;}
 .tab-container .header a:hover{background:#f3f3f3;border-bottom-color:#f3f3f3;}
-.tab-container .panel{display:none;}
+.tab-container .header span{display:inline-block;*display:inline;*zoom:1;}
+.tab-container .header .title{white-space:nowrap;/*width:30px;*/overflow:hidden;text-overflow:ellipsis;}
+.tab-container .header .closer{font:12px/12px 宋体;margin:4px 0 0 3px;line-height:12px;vertical-align:top;*vertical-align:baseline;width:12px;height:11px;text-align:center;}
+.tab-container .header .closer:hover{background:#ccc;}
+.tab-container .panel{display:none;overflow:auto;}
+#page{height:300px;/*overflow:auto;*/}
 </style>
 </head>
 <body>
@@ -28,52 +37,23 @@
 	<div class="tab-container">
 		<div class="header">
 			<ul class="clearfix">
-				<li><a href="javascript:;">tab000000000</a></li>
-				<li><a href="javascript:;">tab11111111</a></li>
-				<li><a href="javascript:;">tab22222222222</a></li>
+				<li><a href="javascript:;"><span class="icon icon-money"></span><span class="title">tab0</span><span class="closer">×</span></a></li>
+				<li><a href="javascript:;"><span class="icon icon-chart"></span><span class="title">tab1</span><span class="closer">×</span></a></li>
+				<li><a href="javascript:;"><span class="icon icon-user"></span><span class="title">tab2</span><span class="closer">×</span></a></li>
 			</ul>
 		</div>
 		<div class="panel">
 			<div>
-				content0<br />
-				content0<br />
-				content0<br />
-				content0<br />
-				content0<br />
+				content0<br /> content0<br /> content0<br /> content0<br /> content0<br /> content0<br />
+				content0<br /> content0<br /> content0<br /> content0<br /> content0<br /> content0<br />
+				content0<br /> content0<br /> content0<br /> content0<br /> content0<br /> content0<br />
+				content0<br /> content0<br /> content0<br /> content0<br /> content0<br /> content0<br />
+				content0<br /> content0<br /> content0<br /> content0<br /> content0<br /> content0<br />
+				content0<br /> content0<br /> content0<br /> content0<br /> content0<br /> content0<br />
 			</div>
 			<div>
 				content1<br />
 				content1<br />
-				content1<br />
-				content1<br />
-				content1<br />
-			</div>
-			<div>
-				content2<br />
-				content2<br />
-				content2<br />
-				content2<br />
-				content2<br />
-			</div>
-		</div>
-	</div>
-	<div class="tab-container">
-		<div class="header">
-			<ul class="clearfix">
-				<li><a href="javascript:;">tab000000000</a></li>
-				<li><a href="javascript:;">tab11111111</a></li>
-				<li><a href="javascript:;">tab22222222222</a></li>
-			</ul>
-		</div>
-		<div class="panel">
-			<div>
-				content0<br />
-				content0<br />
-				content0<br />
-				content0<br />
-				content0<br />
-			</div>
-			<div>
 				content1<br />
 				content1<br />
 				content1<br />
@@ -97,14 +77,21 @@
 <script type="text/javascript">
 //<![CDATA[
 $(function(){
-	$('.tab-container').tabs({
+	var my_tabs = $('.tab-container').tabs({
 		width:1200,
 		height:60,
 		tabWidth:150,
+		contentFit:true,
 		border:true,
-		icon:null,
 		selected:1,
 		position:'north'
+	}).tabs();
+	my_tabs[0].add(1, {
+		title:'new Add',
+		content:'new Add<br />test',
+		closable:true,
+		icon:'money',
+		select:true
 	});
 });
 //]]>

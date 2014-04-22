@@ -19,39 +19,104 @@ $.fn.tabs=function(options){
 		position:'north'
 	}, options);
 	var slice = light.util.slice;
+	var createElement = light.util.createElement;
 	options.renders = slice.call(this);
 	var handler = function(box, options){ return new handler.prototype.init(box, options); };
+	var list2Array = function(list){
+		var ret = [];
+		try{
+			ret = slice.call(list);
+		}catch(e){
+			for(var i=0,ii=list.length-1; i<=ii; i++)
+				ret.push(list[i]);
+		}
+		return ret;
+	};
 	handler.prototype = {
 		init: function(box, options){
 			this.render = box;
 			this.userOptions = options;
-			try{
-				this.titles = slice.call(box.children[0].children[0].children);
-				this.panels = slice.call(box.children[1].children);
-			}catch(e){
-				this.titles = [];
-				this.panels = [];
-				for(var i=0,ii=box.children[0].children[0].children.length-1; i<=ii; i++)
-					this.titles.push(box.children[0].children[0].children[i]);
-				for(var i=0,ii=box.children[1].children.length-1; i<=ii; i++) t
-					is.panels.push(box.children[1].children[i]);
-			}
+			this.headers = list2Array(box.children[0].children[0].children);
+			this.panels = list2Array(box.children[1].children);
 			var that = this;
 			var $box = $(box);
 			$box.addClass('tab-container');
-			$(this.titles[options.selected].children[0]).addClass('current');
+			$(this.headers[options.selected].children[0]).addClass('current');
 			$(this.panels).parent().show().end().hide().eq(options.selected).show();
+			if(options.contentFit){
+				box.children[1].style.height = (box.parentNode.offsetHeight - box.children[0].offsetHeight) + 'px';
+			}
 			$(box.children[0]).delegate('li', {
 				click:function(e){
-					that.select(that.titles.indexOf(this));
+					that.select(that.headers.indexOf(this));
+				}
+			}).delegate('.closer', {
+				click:function(e){
+					that.close(that.headers.indexOf(this.parentNode.parentNode));
 				}
 			});
 		},
+		add:function(index, op){
+			var len = this.headers.length;
+			var position = 'beforeBegin';
+			if(index>=len){
+				index = len -1;
+				position = 'afterEnd';
+			}
+			if(index<0) index = 0;
+			var header = createElement({
+				name:'li', children:{
+					name:'a', attr:{href:'javascript:;'}, children:
+						(function(){
+							var ret = ['<span class="title">'+op.title+'</span>'];
+							if(op.icon){
+								ret.unshift(createElement({
+									name:'span', attr:{className:'icon icon-'+op.icon}, children:
+										light.ui.markChars.close
+								}));
+							}
+							if(op.closable){
+								ret.push(createElement({
+									name:'span', attr:{className:'closer'}, children:
+										light.ui.markChars.close
+								}));
+							}
+							return ret;
+						})()
+				}
+			});
+			var panel = createElement({name:'div', attr:{style:{display:'none'}}, children:op.content});
+			var render = this.render;
+			this.headers[index].insertAdjacentHTML(position, header);
+			this.panels[index].insertAdjacentHTML(position, panel);
+			this.headers = list2Array(render.children[0].children[0].children);
+			this.panels = list2Array(render.children[1].children);
+			if(index<=this.userOptions.selected) this.userOptions.selected++;
+			if(op.select) this.select(index + (position==='afterEnd'?1:0));
+			return this;
+		},
+		close: function(index){
+			var options = this.userOptions;
+			if(options.selected==index){
+				if(this.headers.length - 1){
+					this.select(Number(!index));
+				}else{
+					options.selected = null;
+				}
+			}else if(options.selected>index){
+				options.selected--;
+			}
+			var header = this.headers.splice(index, 1)[0];
+			var panel = this.panels.splice(index, 1)[0];
+			header.parentNode.removeChild(header);
+			panel.parentNode.removeChild(panel);
+			return this;
+		},
 		select: function(index){
 			var prevSelected = this.userOptions.selected;
-			if(index==prevSelected || index<0 || index>this.titles.length-1) return false;
-			$(this.titles[prevSelected].children[0]).removeClass('current');
-			$(this.titles[index].children[0]).addClass('current');
+			if(index==prevSelected || index<0 || index>this.headers.length-1) return false;
+			$(this.headers[prevSelected].children[0]).removeClass('current');
+			$(this.headers[index].children[0]).addClass('current');
 			$(this.panels[prevSelected]).hide();
 			$(this.panels[index]).show();
 			this.userOptions.selected = index;

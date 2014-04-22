@@ -2,7 +2,7 @@
 var light = {
 	// ui {{{
 	ui:{
-		markChars:{up: '↑', down : '↓', expand:'▼', fold:'▲', empty:'&nbsp;&nbsp;'}
+		markChars:{up: '↑', down : '↓', expand:'▼', fold:'▲', close:'×', empty:'&nbsp;&nbsp;'}
 	},
 	// }}}
 	// util {{{
