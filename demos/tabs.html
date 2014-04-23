@@ -14,34 +14,50 @@
 .clearfix:before, .clearfix:after{content:"";display:table;}
 .clearfix:after{clear:both;overflow:hidden;}
 .clearfix{*zoom:1;}
-.icon{width:16px;height:16px;vertical-align:top;*vertical-align:baseline;margin:0 3px;}
-.icon-chart{background:url("../img/chart.png");}
-.icon-user{background:url("../img/user.png");}
-.icon-money{background:url("../img/money.png");}
+.icon{width:16px;height:16px;vertical-align:top;*vertical-align:baseline;}
+.icon-chart{background:url("../img/chart.png") no-repeat;}
+.icon-user{background:url("../img/user.png") no-repeat;}
+.icon-money{background:url("../img/money.png") no-repeat;}
 .tab-container{border:1px solid #ccc;margin-bottom:10px;}
-.tab-container .header ul{border:none;border-bottom:1px solid #ccc;}
-.tab-container .header li{list-style:none;float:left;}
-.tab-container .header a{text-align:center;text-decoration:none;padding:2px 5px;margin:0 1px;border:1px solid #ccc;border-bottom:1px solid #e6e6e6;position:relative;bottom:-1px;cursor:pointer;color:black;vertical-align:middle;float:left;height:20px;line-height:20px;background:#e6e6e6;}
-.tab-container .header a.current{background:white;border-bottom-color:white;}
-.tab-container .header a:hover{background:#f3f3f3;border-bottom-color:#f3f3f3;}
-.tab-container .header span{display:inline-block;*display:inline;*zoom:1;}
-.tab-container .header .title{white-space:nowrap;/*width:30px;*/overflow:hidden;text-overflow:ellipsis;}
-.tab-container .header .closer{font:12px/12px 宋体;margin:4px 0 0 3px;line-height:12px;vertical-align:top;*vertical-align:baseline;width:12px;height:11px;text-align:center;}
+.tab-container .header li{list-style:none;float:left;border:1px solid #ccc;margin:1px 1px 0;border-bottom:none;}
+.tab-container .header a{text-align:center;text-decoration:none;padding:2px 5px;cursor:pointer;color:black;vertical-align:middle;float:left;height:20px;_height:24px;line-height:20px;background:#e6e6e6;overflow:hidden;position:relative;margin-bottom:-1px;border-bottom:1px solid #ccc;}
+//.tab-container .header .current{border:1px solid purple;border-bottom:none;}
+.tab-container .header .current a{background:white;border-bottom-color:white;}
+.tab-container .header a:hover{background:#f3f3f3;}
+.tab-container .header span{/*display:inline-block;*display:inline;*zoom:1;*/float:left;}
+.tab-container .header .title{white-space:nowrap;/*width:50px;*/overflow:hidden;text-overflow:ellipsis;}
+.tab-container .header .closer{font:12px/12px 宋体;margin:4px 0 0 3px;line-height:13px;vertical-align:top;*vertical-align:baseline;width:12px;height:11px;text-align:center;}
 .tab-container .header .closer:hover{background:#ccc;}
-.tab-container .panel{display:none;overflow:auto;}
+.tab-container .panel{display:none;overflow:auto;border-top:1px solid #ccc;}
 #page{height:300px;/*overflow:auto;*/}
 </style>
 </head>
 <body>
 <div id="page">
 	<div class="tab-container">
-		<div class="header">
-			<ul class="clearfix">
-				<li><a href="javascript:;"><span class="icon icon-money"></span><span class="title">tab0</span><span class="closer">×</span></a></li>
-				<li><a href="javascript:;"><span class="icon icon-chart"></span><span class="title">tab1</span><span class="closer">×</span></a></li>
-				<li><a href="javascript:;"><span class="icon icon-user"></span><span class="title">tab2</span><span class="closer">×</span></a></li>
-			</ul>
-		</div>
+		<ul class="header">
+			<li>
+				<a href="javascript:;">
+					<span class="icon icon-money"></span>
+					<span class="title">tab0</span>
+					<span class="closer">×</span>
+				</a>
+				</li>
+			<li>
+				<a href="javascript:;">
+					<span class="icon icon-chart"></span>
+					<span class="title">tab1</span>
+					<span class="closer">×</span>
+				</a>
+			</li>
+			<li>
+				<a href="javascript:;">
+					<span class="icon icon-user"></span>
+					<span class="title">tab2</span>
+					<span class="closer">×</span>
+				</a>
+			</li>
+		</ul>
 		<div class="panel">
 			<div>
 				content0<br /> content0<br /> content0<br /> content0<br /> content0<br /> content0<br />

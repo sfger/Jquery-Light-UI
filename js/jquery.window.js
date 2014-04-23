@@ -21,7 +21,7 @@ $.fn.window=function(options){
 			var w = $( '<div class="window-container">' +
 				'<div class="window-wrapper clearfix">' +
 					'<div class="window-bar header clearfix">' +
-						'<span class="title" style="float:left">Title</span>' +
+						'<span class="title" style="float:left">'+(options.title||'')+'</span>' +
 						'<a href="javascript:;" class="btn closer">×</a>' +
 					'</div>' +
 					'<div class="contents"></div>' +

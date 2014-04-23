@@ -36,13 +36,16 @@ $.fn.tabs=function(options){
 		init: function(box, options){
 			this.render = box;
 			this.userOptions = options;
-			this.headers = list2Array(box.children[0].children[0].children);
+			this.headers = list2Array(box.children[0].children);
 			this.panels = list2Array(box.children[1].children);
 			var that = this;
 			var $box = $(box);
+			$(box.children[0]).addClass('clearfix');
 			$box.addClass('tab-container');
-			$(this.headers[options.selected].children[0]).addClass('current');
-			$(this.panels).parent().show().end().hide().eq(options.selected).show();
+			if(this.headers.length){
+				$(this.headers[options.selected]).addClass('current');
+				$(this.panels).parent().show().end().hide().eq(options.selected).show();
+			}
 			if(options.contentFit){
 				box.children[1].style.height = (box.parentNode.offsetHeight - box.children[0].offsetHeight) + 'px';
 			}
@@ -57,9 +60,13 @@ $.fn.tabs=function(options){
 			});
 		},
 		add:function(index, op){
+			var render = this.render;
 			var len = this.headers.length;
 			var position = 'beforeBegin';
-			if(index>=len){
+			if(!len){
+				index = 0;
+				$(render.children[1]).show();
+			}else if(index>=len){
 				index = len -1;
 				position = 'afterEnd';
 			}
@@ -71,8 +78,7 @@ $.fn.tabs=function(options){
 							var ret = ['<span class="title">'+op.title+'</span>'];
 							if(op.icon){
 								ret.unshift(createElement({
-									name:'span', attr:{className:'icon icon-'+op.icon}, children:
-										light.ui.markChars.close
+									name:'span', attr:{className:'icon icon-'+op.icon}
 								}));
 							}
 							if(op.closable){
@@ -86,10 +92,14 @@ $.fn.tabs=function(options){
 				}
 			});
 			var panel = createElement({name:'div', attr:{style:{display:'none'}}, children:op.content});
-			var render = this.render;
-			this.headers[index].insertAdjacentHTML(position, header);
-			this.panels[index].insertAdjacentHTML(position, panel);
-			this.headers = list2Array(render.children[0].children[0].children);
+			if(this.headers.length){
+				this.headers[index].insertAdjacentHTML(position, header);
+				this.panels[index].insertAdjacentHTML(position, panel);
+			}else{
+				render.children[0].innerHTML = header;
+				render.children[1].innerHTML = panel;
+			}
+			this.headers = list2Array(render.children[0].children);
 			this.panels = list2Array(render.children[1].children);
 			if(index<=this.userOptions.selected) this.userOptions.selected++;
 			if(op.select) this.select(index + (position==='afterEnd'?1:0));
@@ -115,8 +125,8 @@ $.fn.tabs=function(options){
 		select: function(index){
 			var prevSelected = this.userOptions.selected;
 			if(index==prevSelected || index<0 || index>this.headers.length-1) return false;
-			$(this.headers[prevSelected].children[0]).removeClass('current');
-			$(this.headers[index].children[0]).addClass('current');
+			$(this.headers[prevSelected]).removeClass('current');
+			$(this.headers[index]).addClass('current');
 			$(this.panels[prevSelected]).hide();
 			$(this.panels[index]).show();
 			this.userOptions.selected = index;
