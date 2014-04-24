@@ -21,13 +21,14 @@ input.btn, button.btn{*line-height:0.8;}
 
 .window-container{display:none;position:fixed;z-index:50;top:0;left:0;background:black;opacity:0.72;filter:alpha(opacity=72);}
 .window-wrapper{width:400px;height:260px;overflow:hidden;position:absolute;margin:auto;background:white;/*box-shadow:3px 3px 3px #defefe;*/}
-.window-container .window-bar{background:#b6b6b6;}
-.window-container .header{padding:3px 8px;line-height:1.5;}
-.window-container .closer{float:right;color:black;font-weight:bold;;text-decoration:none;transition:all 0.5s ease-out 0s;line-height:1.5;font-family:宋体;padding:0;border:none;}
+.window-container .window-bar{background:#b6b6b6;padding:2px 2px;}
+.window-container .closer{float:right;color:black;font-weight:bold;;text-decoration:none;transition:all 0.5s ease-out 0s;font-family:宋体;padding:0;border:none;}
 .window-container .closer:hover{transform:rotate(360deg);-webkit-transform:rotate(360deg);background:none;border:none;}
 .window-container .closer:active{box-shadow:none;}
 .window-container .contents{padding:2px 1px 2px 5px;overflow:auto;text-align:left;}
-.window-container .footer{text-align:right;padding:3px 0;}
+.window-container .header{line-height:2;}
+.window-container .footer{text-align:right;}
+input{*filter:chroma(color=black);}
 </style>
 </head>
 <body>
@@ -48,7 +49,7 @@ input.btn, button.btn{*line-height:0.8;}
 //<![CDATA[
 "use strict";
 var m_window = $('.my-window').window({
-	show: true,
+	show: false,
 	title: '点我干啥？',
 	onBeforeClose: function(){
 		return confirm('确定关闭窗口？');

@@ -9,8 +9,8 @@
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 <style type="text/css" media="all">
 *{padding:0;margin:0;}
-.btn, .btn-normal{vertical-align:middle;border:1px solid #333;border-radius:3px;color:black;background:none;text-decoration:none;outline:none;display:inline-block;*display:inline;*zoom:1;overflow:visible;margin:0 3px;width:auto;padding:4px 9px;cursor:pointer;line-height:1.1;}
-input.btn, button.btn{*line-height:0.8;}
+.btn, .btn-normal{vertical-align:middle;border:1px solid #333;border-radius:3px;color:#010101;background:none;text-decoration:none;outline:none;display:inline-block;*display:inline;*zoom:1;overflow:visible;margin:0 3px;width:auto;padding:4px 9px;cursor:pointer;line-height:1.1;}
+input.btn, button.btn{*line-height:0.8;/**filter:chroma(color=black);*/}
 .btn-green{background-color:green;color:white;}
 .btn-green:active{background-image:none;color:#cacaca;}
 </style>
@@ -18,13 +18,17 @@ input.btn, button.btn{*line-height:0.8;}
 <body>
 <div id="page">
     <a style="font-size:10px;" id="btn" class="btn" href="javascript:;">Button</a>
-	<input style="font-size:10px;" type="button" class="btn btn-sl btn-green" value="Button">
+	<input style="font-size:10px;" type="button" class="btn" value="Button">
+	<input style="font-size:10px;" type="button" class="btn btn-green" value="Button">
 	<br />
     <a id="btn" class="btn" href="javascript:;">Button</a>
-	<input type="button" class="btn btn-sl btn-green" value="Button">
+	<input type="button" class="btn" value="Button">
+	<input type="button" class="btn btn-green" value="Button">
 	<br />
     <a style="font-size:24px;" id="btn" class="btn" href="javascript:;">Button</a>
-	<input style="font-size:24px;" type="button" class="btn btn-sl btn-green" value="Button">
+	<input style="font-size:24px;" type="button" class="btn" value="Button">
+	<input style="font-size:24px;" type="button" class="btn btn-green" value="Button">
 	<br />
 </div><!-- #page end! -->
 </body>
+</html>
