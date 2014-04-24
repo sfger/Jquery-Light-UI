@@ -250,7 +250,7 @@ $.fn.datagrid=function(options){
 			}
 			$box.delegate('.field', {
 				click: function(e){
-					var fieldIndex = that.fieldElements.index(this.children[0]) - 1;
+					var fieldIndex = that.fieldElements.index(this.children[0]) - options.rowNum ? 1 : 0;
 					if(that.userOptions.rowNum && fieldIndex===-1) return false;
 					var field = that.allColumns[fieldIndex].field;
 					that.sortBy(field, that.sort!==field ? that.defaultOrder : !that.order);
@@ -285,7 +285,8 @@ $.fn.datagrid=function(options){
 				var tr = rowData.tr;
 				if(frozenTr){
 					frozenTr.parentNode.appendChild(frozenTr);
-					frozenTr.children[0].children[0].innerHTML = rowNum + 1;
+					if(options.rowNum)
+						frozenTr.children[0].children[0].innerHTML = rowNum + 1;
 				}
 				if(tr){
 					tr.parentNode.appendChild(tr);
