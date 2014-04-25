@@ -250,7 +250,7 @@ $.fn.datagrid=function(options){
 			}
 			$box.delegate('.field', {
 				click: function(e){
-					var fieldIndex = that.fieldElements.index(this.children[0]) - options.rowNum ? 1 : 0;
+					var fieldIndex = that.fieldElements.index(this.children[0]) - (options.rowNum ? 1 : 0);
 					if(that.userOptions.rowNum && fieldIndex===-1) return false;
 					var field = that.allColumns[fieldIndex].field;
 					that.sortBy(field, that.sort!==field ? that.defaultOrder : !that.order);
