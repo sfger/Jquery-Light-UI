@@ -56,6 +56,7 @@ $.fn.tabs=function(options){
 			}).delegate('.closer', {
 				click:function(e){
 					that.close(that.headers.indexOf(this.parentNode.parentNode));
+					return false;
 				}
 			});
 		},
@@ -110,6 +111,7 @@ $.fn.tabs=function(options){
 			if(options.selected==index){
 				if(this.headers.length - 1){
 					this.select(Number(!index));
+					if(!index) options.selected = 0;
 				}else{
 					options.selected = null;
 				}
