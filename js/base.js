@@ -2,7 +2,7 @@
 var light = {
 	// ui {{{
 	ui:{
-		markChars:{up: '↑', down : '↓', expand:'▼', fold:'▲', close:'×', empty:'&nbsp;&nbsp;'}
+		markChars:{up: '↑', down : '↓', expand:'▼', fold:'▲', close:'×', ok:'√', empty:'&nbsp;&nbsp;'}
 	},
 	// }}}
 	// util {{{
@@ -59,7 +59,7 @@ var light = {
 			return target;
 		},
 		// }}}
-		//method createElement {{{
+		// method createElement {{{
 		createElement:function(node){
 			var getType = light.util.getType;
 			var cd = '',
@@ -101,8 +101,67 @@ var light = {
 				} else cd = '';
 			}
 			return cd;
+		},
+		// }}}
+		// method createDomElement {{{
+		createDomElement:function(node, container){
+			if(!node) return;
+			var getType = light.util.getType;
+			var ret = container ? container : document.createDocumentFragment(),
+				fn = light.util.createDomElement,
+				node_type = getType(node),
+				text = {String:1, Number:1},
+				hasOwnProperty = Object.prototype.hasOwnProperty;
+			if(text[node_type]){
+				ret.appendChild(document.createTextNode(node));
+			}else if(node_type==='Object' && node.name){
+				var attr = node.attr, prop = node.prop, children = node.children, key;
+				if(attr){
+					for(key in attr){
+						if(key==='style'){
+							var style = attr[key], ot = getType(style);
+							if(ot=='Object'){
+								for(var sk in style)
+									if(hasOwnProperty.call(style, sk))
+										ret.style[sk] = style[sk];
+							}else if(ot=='String'){
+								ret.style.cssText = style;
+							}
+						}else{
+							ret.setAttribute(key, attr[key]);
+						}
+					}
+				}
+				if(prop){
+					for(key in prop){
+						if(hasOwnProperty.call(prop, key)){
+							if(key=='class') key = 'className';
+							ret[key] = prop[key];
+						}
+					}
+				}
+				if(children){
+					if(text[getType(children)]){
+						ret.innerHTML += children;
+					}else{
+						if(getType(children)!=='Array') children = children[i];
+						var sub;
+						for(var i=0,ii=children.length-1; i<=ii; i++){
+							if(text[getType(children[i])]){
+								ret.innerHTML += children[i];
+							}else if(children[i].name){
+								sub = document.createElement(children[i].name);
+								ret.appendChild(sub);
+								fn(children[i], sub);
+							}
+						}
+					}
+				}
+			}
+			if(!ret.children) ret.children = ret.childNodes;
+			ret = null;
 		}
-		//}}}
+		// }}}
 	},
 	// }}}
 	// Event {{{

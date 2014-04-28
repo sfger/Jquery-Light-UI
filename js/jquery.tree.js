@@ -31,45 +31,44 @@ $.fn.tree=function(options){
 				};
 			});
 			var getType = function(obj){ return toString.call(obj).slice(8, -1); };
-			var createTree = function(data, deep){
+			var createTree = function(data, deep, container){
 				if(!deep) deep = 1;
 				var ul = document.createElement('ul');
+				container.appendChild(ul);
 				ul.setAttribute('deep', deep);
 				for(var i=0,ii=data.length-1; i<=ii; i++){
 					var name = document.createElement('span');
 					var li = document.createElement('li');
 					var line = document.createElement('a');
 					var lindent = data[i].children ? (deep==1?deep-2:deep-1) : deep;
+					ul.appendChild(li);
+					li.appendChild(line);
 					for(var j=0; j<lindent; j++){
 						var span = document.createElement('span');
-						span.className = j===lindent-1 ? 'join' : 'line';
 						line.appendChild(span);
+						span.className = j===lindent-1 ? 'join' : 'line';
 					}
 					name.appendChild(document.createTextNode(data[i].name));
 					line.option = data[i];
 					if(data[i].children){
 						var hit = document.createElement('span');
-						hit.className = 'hit';
 						line.appendChild(hit);
+						hit.className = 'hit';
 					}
 					var icon = document.createElement('span');
-					icon.className = 'file';
 					line.appendChild(icon);
+					icon.className = 'file';
 					name.className = 'title';
 					line.appendChild(name);
 					line.setAttribute('href', 'javascript:;');
-					li.appendChild(line);
 					if(data[i].children){
 						icon.className = 'folder';
-						li.appendChild(createTree(data[i].children, deep+1));
+						createTree(data[i].children, deep+1, li);
 					}
-					// if(i===0) li.className = li.className + ' first';
-					// if(i===ii) li.className = li.className + ' last';
-					ul.appendChild(li);
 				}
-				return ul;
 			};
-			var w = $(createTree(options.data)).appendTo(box);
+			createTree(options.data, 1, box);
+			var w = $(box.children[0]);
 			var $box = $(box);
 			$box.addClass('tree-container');
 			this.userOptions = options;
