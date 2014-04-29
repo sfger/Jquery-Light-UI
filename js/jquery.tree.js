@@ -14,6 +14,44 @@ $.fn.tree=function(options){
 		data: []
 	}, options);
 	var handler = function(box, options){ return new handler.prototype.init(box, options); };
+	var createTree = function(data, deep, container){
+		if(!deep) deep = 1;
+		var ul = document.createElement('ul');
+		container.appendChild(ul);
+		ul.setAttribute('deep', deep);
+		for(var i=0,ii=data.length-1; i<=ii; i++){
+			var name = document.createElement('span');
+			var li = document.createElement('li');
+			var line = document.createElement('a');
+			ul.appendChild(li);
+			ul.setAttribute('deep', deep);
+			li.appendChild(line);
+			line.setAttribute('href', 'javascript:;');
+			line.option = data[i];
+			var indent = data[i].children ? (deep==1?deep-2:deep-1) : deep;
+			for(var j=0; j<indent; j++){
+				var span = document.createElement('span');
+				line.appendChild(span);
+				span.className = j===indent-1 ? 'join' : 'line';
+			}
+			if(data[i].children){
+				var hit = document.createElement('span');
+				line.appendChild(hit);
+				hit.className = 'hit';
+			}
+			var icon = document.createElement('span');
+			icon.className = 'file';
+			line.appendChild(icon);
+			if(data[i].children){
+				icon.className = 'folder';
+				createTree(data[i].children, deep+1, li);
+			}
+			line.appendChild(name);
+			name.appendChild(document.createTextNode(data[i].name));
+			name.className = 'title';
+		}
+	};
+	var getType = function(obj){ return toString.call(obj).slice(8, -1); };
 	handler.prototype = {
 		init: function(box, options){
 			var that = this;
@@ -30,43 +68,6 @@ $.fn.tree=function(options){
 					return e['offset'+one];
 				};
 			});
-			var getType = function(obj){ return toString.call(obj).slice(8, -1); };
-			var createTree = function(data, deep, container){
-				if(!deep) deep = 1;
-				var ul = document.createElement('ul');
-				container.appendChild(ul);
-				ul.setAttribute('deep', deep);
-				for(var i=0,ii=data.length-1; i<=ii; i++){
-					var name = document.createElement('span');
-					var li = document.createElement('li');
-					var line = document.createElement('a');
-					var lindent = data[i].children ? (deep==1?deep-2:deep-1) : deep;
-					ul.appendChild(li);
-					li.appendChild(line);
-					for(var j=0; j<lindent; j++){
-						var span = document.createElement('span');
-						line.appendChild(span);
-						span.className = j===lindent-1 ? 'join' : 'line';
-					}
-					name.appendChild(document.createTextNode(data[i].name));
-					line.option = data[i];
-					if(data[i].children){
-						var hit = document.createElement('span');
-						line.appendChild(hit);
-						hit.className = 'hit';
-					}
-					var icon = document.createElement('span');
-					line.appendChild(icon);
-					icon.className = 'file';
-					name.className = 'title';
-					line.appendChild(name);
-					line.setAttribute('href', 'javascript:;');
-					if(data[i].children){
-						icon.className = 'folder';
-						createTree(data[i].children, deep+1, li);
-					}
-				}
-			};
 			createTree(options.data, 1, box);
 			var w = $(box.children[0]);
 			var $box = $(box);
@@ -75,10 +76,10 @@ $.fn.tree=function(options){
 			this.container  = $box.get(0);
 			this.contents   = w.get(0);
 			$(this.contents).delegate('a', {
-				'contextmenu': function(e){
+				contextmenu: function(e){
 					return that.userOptions.onContextmenu.bind(this)(e);
 				},
-				'click': function(e){
+				click: function(e){
 					if(!that.isLeaf(this)){
 						that.toggle(this);
 					}else{
@@ -89,7 +90,63 @@ $.fn.tree=function(options){
 					return that.userOptions.onClick.bind(this)(e);
 				}
 			});
-			w.appendTo(box);
+			if(options.dnd){
+				var drag = {
+					updatePosition: function(e){
+						$(that.dragingProxyElement).css({top:e.pageY, left:e.pageX+25})
+					},
+					start: function(){
+						$(document).on({
+							mousemove:drag.move,
+							mouseup:drag.end
+						});
+					},
+					move: function(e){
+						that.disableSelection();
+						if(that.dragingProxyElement.style.display!=='block')
+							that.dragingProxyElement.style.display = 'block';
+						drag.updatePosition(e);
+					},
+					end: function(){
+						$(that.dragingProxyElement).hide();
+						$(document).off({
+							mousemove:drag.move,
+							mouseup:drag.end
+						});
+					}
+				};
+				if(/Chrome/.test(navigator.userAgent)){//Chrome draging hover state fixed
+					$(this.contents).delegate('a', {
+						mouseenter: function(){
+							$(this).addClass('hover');
+						},
+						mouseleave: function(){
+							$(this).removeClass('hover');
+						}
+					});
+				}
+				$(this.contents).delegate('a', {
+					mousedown: function(e){
+						that.dragingElement = this;
+						if(!that.dragingProxyElement){
+							that.dragingProxyElement = document.createElement('div');
+							document.body.appendChild(that.dragingProxyElement);
+							$(that.dragingProxyElement).addClass('tree-draging-proxy');
+						}
+						$(that.dragingProxyElement).html(that.dragingElement.option.name);
+						drag.updatePosition(e);
+						drag.start();
+						return false;
+					}
+				});
+			}
+		},
+		disableSelection: function(){
+			if(window.getSelection){
+				window.getSelection().removeAllRanges();
+			}else if(document.selection){
+				document.selection.empty();
+			}
 		},
 		isLeaf: function(node){
 			return !node.option.children;
