@@ -47,8 +47,8 @@ var light = {
 						if(target === copy) continue;
 						if(deep && copy && (light.util.isPlainObject(copy) && copyType ==='Array')){
 							var clone = (copyType==='Array')
-									? (src && (srcType==='Array') ? src : [])
-									: (src && (light.util.isPlainObject(copy)) ? src : {});
+								? (src && (srcType==='Array') ? src : [])
+								: (src && (light.util.isPlainObject(copy)) ? src : {});
 							target[name] = light.util.extend(deep, clone, copy);
 						}else if(copy!==undefined){
 							target[name] = copy;
