@@ -15,7 +15,7 @@
 .clearfix:after{clear:both;overflow:hidden;}
 .clearfix{*zoom:1;}
 .tree-container {width:auto;overflow:auto;background:white;}
-.tree-container ul {width:auto:height:auto;overflow:hidden;_line-height:0;_font-size:0;}
+.tree-container ul {width:auto:height:auto;_line-height:0;_font-size:0;}
 .tree-container ul, .tree-container li{width:auto;vertical-align:middle;list-style:none;}
 .tree-container ul ul{display:none;}
 .tree-container li a{color:black;line-height:16px;text-decoration:none;background:transparent;display:block;white-space:nowrap;}
@@ -339,7 +339,7 @@ var data = [
 $('#my_tree').tree({
 	data: data,
 	dnd: true,
-	checkbox: true,
+	//checkbox: true,
 	animate: {time:115},
 	onClick: function(e){
 		// alert('onClick');

@@ -14,7 +14,7 @@ $.fn.tree=function(options){
 		data: []
 	}, options);
 	var handler = function(box, options){ return new handler.prototype.init(box, options); };
-	var createTree = function(data, deep, container){
+	var createTree = function(data, deep, container, deepest_ul){
 		if(!deep) deep = 1;
 		var ul = document.createElement('ul');
 		container.appendChild(ul);
@@ -45,7 +45,9 @@ $.fn.tree=function(options){
 			line.appendChild(icon);
 			if(data[i].children){
 				icon.className = 'folder';
-				createTree(data[i].children, deep+1, li);
+				createTree(data[i].children, deep+1, li, deepest_ul);
+			}else{
+				deepest_ul.push(ul);
 			}
 			if(options.checkbox){
 				var checkbox = document.createElement('span');
@@ -74,14 +76,14 @@ $.fn.tree=function(options){
 					return e['offset'+one];
 				};
 			});
-			createTree(options.data, 1, box);
+			var deepest_ul = [];
+			createTree(options.data, 1, box, deepest_ul);
 			var w = $(box.children[0]);
 			var $box = $(box);
 			$box.addClass('tree-container');
 			this.userOptions = options;
 			this.container  = $box.get(0);
 			this.contents   = w.get(0);
-			console.log(this.contents);
 			$(this.contents).delegate('a', {
 				contextmenu: function(e){
 					return that.userOptions.onContextmenu.bind(this)(e);
@@ -151,6 +153,9 @@ $.fn.tree=function(options){
 						}
 						return false;
 					}
+				});
+				$.each(deepest_ul, function(i, one){
+					check.updateParentCheckState(one);
 				});
 			}
 			// }}}
