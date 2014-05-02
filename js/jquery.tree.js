@@ -135,7 +135,6 @@ $.fn.tree=function(options){
 							if(some_len || checked_len){
 								checkbox.className = 'checkbox checkbox-some';
 							}else{
-								console.log('test');
 								checkbox.className = 'checkbox';
 							}
 						}
@@ -256,6 +255,10 @@ $.fn.tree=function(options){
 							mouseup:drag.end
 						});
 						if(drag.dropPosition){
+							if(options.onBeforeDrop){
+								var tag = options.onBeforeDrop.bind(that)(drag.prevLine, that.dragingElement, drag.dropPosition);
+								if(tag===false) return;
+							}
 							var sli = that.dragingElement.parentNode,
 								tli = drag.prevLine.parentNode;
 							var sul = sli.parentNode;
@@ -268,11 +271,14 @@ $.fn.tree=function(options){
 							}
 							drag.updateChildrenIndext({children:[sli]}, gap);
 							drag.dropPosition = null;
-						}
-						if(options.checkbox){
-							if(sli) check.updateParentCheckState(sli.parentNode);
-							if(sul) check.updateParentCheckState(sul);
-							if(tli) check.updateParentCheckState(tli.parentNode);
+							if(options.checkbox){
+								if(sli) check.updateParentCheckState(sli.parentNode);
+								if(sul) check.updateParentCheckState(sul);
+								if(tli) check.updateParentCheckState(tli.parentNode);
+							}
+							if(options.onDrop){
+								options.onDrop.bind(that)(drag.prevLine, that.dragingElement, drag.dropPosition);
+							}
 						}
 					}
 					// }}}

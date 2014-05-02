@@ -339,11 +339,18 @@ var data = [
 $('#my_tree').tree({
 	data: data,
 	dnd: true,
-	//checkbox: true,
+	checkbox: true,
 	animate: {time:115},
 	onClick: function(e){
 		// alert('onClick');
 		return false;
+	},
+	onBeforeDrop: function(target, source, position){
+		// alert('Before Drop');
+		//return false;
+	},
+	onDrop: function(target, source, position){
+		// alert('Droped');
 	},
 	onContextmenu: function(e){
 		// alert('onContextmenu');
