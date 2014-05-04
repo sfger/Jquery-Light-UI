@@ -18,7 +18,7 @@
 .icon-chart{background:url("../img/chart.png") no-repeat;}
 .icon-user{background:url("../img/user.png") no-repeat;}
 .icon-money{background:url("../img/money.png") no-repeat;}
-.tab-container{border:1px solid #ccc;margin-bottom:10px;}
+.tab-container{border:1px solid #ccc;}
 .tab-container .header li{list-style:none;float:left;border:1px solid #ccc;margin:1px 1px 0;border-bottom:none;}
 .tab-container .header a{text-align:center;text-decoration:none;padding:2px 5px;cursor:pointer;color:black;vertical-align:middle;float:left;height:20px;_height:24px;line-height:20px;background:#e6e6e6;overflow:hidden;position:relative;margin-bottom:-1px;border-bottom:1px solid #ccc;}
 //.tab-container .header .current{border:1px solid purple;border-bottom:none;}
@@ -102,13 +102,13 @@ $(function(){
 		selected:1,
 		position:'north'
 	}).tabs();
-	my_tabs[0].add(1, {
+	my_tabs[0].add({
 		title:'new Add',
 		content:'new Add<br />test',
 		closable:true,
 		icon:'money',
 		select:true
-	});
+	}, 2);
 });
 //]]>
 </script>

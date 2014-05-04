@@ -14,7 +14,7 @@ $.fn.tree=function(options){
 		data: []
 	}, options);
 	var handler = function(box, options){ return new handler.prototype.init(box, options); };
-	var createTree = function(data, deep, container){
+	var createTree = function(data, deep, container, deepest_ul){
 		if(!deep) deep = 1;
 		var ul = document.createElement('ul');
 		container.appendChild(ul);
@@ -45,7 +45,9 @@ $.fn.tree=function(options){
 			line.appendChild(icon);
 			if(data[i].children){
 				icon.className = 'folder';
-				createTree(data[i].children, deep+1, li);
+				createTree(data[i].children, deep+1, li, deepest_ul);
+			}else{
+				deepest_ul.push(ul);
 			}
 			if(options.checkbox){
 				var checkbox = document.createElement('span');
@@ -74,17 +76,18 @@ $.fn.tree=function(options){
 					return e['offset'+one];
 				};
 			});
-			createTree(options.data, 1, box);
+			var deepest_ul = [];
+			createTree(options.data, 1, box, deepest_ul);
 			var w = $(box.children[0]);
 			var $box = $(box);
 			$box.addClass('tree-container');
 			this.userOptions = options;
 			this.container  = $box.get(0);
 			this.contents   = w.get(0);
-			console.log(this.contents);
 			$(this.contents).delegate('a', {
 				contextmenu: function(e){
-					return that.userOptions.onContextmenu.bind(this)(e);
+					if(that.userOptions.onContextmenu)
+						return that.userOptions.onContextmenu.bind(this)(e);
 				},
 				click: function(e){
 					if(!that.isLeaf(this)){
@@ -133,7 +136,6 @@ $.fn.tree=function(options){
 							if(some_len || checked_len){
 								checkbox.className = 'checkbox checkbox-some';
 							}else{
-								console.log('test');
 								checkbox.className = 'checkbox';
 							}
 						}
@@ -151,6 +153,9 @@ $.fn.tree=function(options){
 						}
 						return false;
 					}
+				});
+				$.each(deepest_ul, function(i, one){
+					check.updateParentCheckState(one);
 				});
 			}
 			// }}}
@@ -251,6 +256,10 @@ $.fn.tree=function(options){
 							mouseup:drag.end
 						});
 						if(drag.dropPosition){
+							if(options.onBeforeDrop){
+								var tag = options.onBeforeDrop.bind(that)(drag.prevLine, that.dragingElement, drag.dropPosition);
+								if(tag===false) return;
+							}
 							var sli = that.dragingElement.parentNode,
 								tli = drag.prevLine.parentNode;
 							var sul = sli.parentNode;
@@ -263,11 +272,14 @@ $.fn.tree=function(options){
 							}
 							drag.updateChildrenIndext({children:[sli]}, gap);
 							drag.dropPosition = null;
-						}
-						if(options.checkbox){
-							if(sli) check.updateParentCheckState(sli.parentNode);
-							if(sul) check.updateParentCheckState(sul);
-							if(tli) check.updateParentCheckState(tli.parentNode);
+							if(options.checkbox){
+								if(sli) check.updateParentCheckState(sli.parentNode);
+								if(sul) check.updateParentCheckState(sul);
+								if(tli) check.updateParentCheckState(tli.parentNode);
+							}
+							if(options.onDrop){
+								options.onDrop.bind(that)(drag.prevLine, that.dragingElement, drag.dropPosition);
+							}
 						}
 					}
 					// }}}
@@ -319,14 +331,14 @@ $.fn.tree=function(options){
 			var method = 'show';
 			$(folder.parentNode).addClass('expanded').find('>a>.hit').addClass('hit-open');
 			$(folder.nextSibling)[method](this.userOptions.animate.time);
-			this.contents.style.width = this.container.scrollWidth + 'px';
+			// this.contents.style.width = this.container.scrollWidth + 'px';
 			return this;
 		},
 		collapse: function(folder){
 			var method = 'hide';
 			$(folder.parentNode).removeClass('expanded').find('>a>.hit').removeClass('hit-open');
 			$(folder.nextSibling)[method](this.userOptions.animate.time);
-			this.contents.style.width = this.container.scrollWidth + 'px';
+			// this.contents.style.width = this.container.scrollWidth + 'px';
 			return this;
 		}
 	};

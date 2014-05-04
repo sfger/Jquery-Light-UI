@@ -47,7 +47,9 @@ $.fn.tabs=function(options){
 				$(this.panels).parent().show().end().hide().eq(options.selected).show();
 			}
 			if(options.contentFit){
-				box.children[1].style.height = (box.parentNode.offsetHeight - box.children[0].offsetHeight) + 'px';
+				$(window).resize(function(){
+					box.children[1].style.height = (box.parentNode.offsetHeight - box.children[0].offsetHeight - 1) + 'px';
+				}).resize();
 			}
 			$(box.children[0]).delegate('li', {
 				click:function(e){
@@ -60,18 +62,19 @@ $.fn.tabs=function(options){
 				}
 			});
 		},
-		add:function(index, op){
+		add:function(op, index){
 			var render = this.render;
 			var len = this.headers.length;
 			var position = 'beforeBegin';
+			if(index===undefined) index = len;
+			if(index<0) index = 0;
 			if(!len){
 				index = 0;
 				$(render.children[1]).show();
 			}else if(index>=len){
-				index = len -1;
+				index = len;
 				position = 'afterEnd';
 			}
-			if(index<0) index = 0;
 			var header = createElement({
 				name:'li', children:{
 					name:'a', attr:{href:'javascript:;'}, children:
@@ -92,10 +95,11 @@ $.fn.tabs=function(options){
 						})()
 				}
 			});
-			var panel = createElement({name:'div', attr:{style:{display:'none'}}, children:op.content});
+			var panel = createElement({name:'div', attr:{className:'tab-content', style:{display:'none'}}, children:op.content});
 			if(this.headers.length){
-				this.headers[index].insertAdjacentHTML(position, header);
-				this.panels[index].insertAdjacentHTML(position, panel);
+				var i = position==='afterEnd' ? index -1 : index;
+				this.headers[i].insertAdjacentHTML(position, header);
+				this.panels[i].insertAdjacentHTML(position, panel);
 			}else{
 				render.children[0].innerHTML = header;
 				render.children[1].innerHTML = panel;
@@ -103,30 +107,31 @@ $.fn.tabs=function(options){
 			this.headers = list2Array(render.children[0].children);
 			this.panels = list2Array(render.children[1].children);
 			if(index<=this.userOptions.selected) this.userOptions.selected++;
-			if(op.select) this.select(index + (position==='afterEnd'?1:0));
+			if(op.select) this.select(index);
+			var box = this.render;
+			box.children[1].style.height = (box.parentNode.offsetHeight - box.children[0].offsetHeight - 1) + 'px';
 			return this;
 		},
 		close: function(index){
+			var header = this.headers.splice(index, 1)[0];
+			var panel = this.panels.splice(index, 1)[0];
+			header.parentNode.removeChild(header);
+			panel.parentNode.removeChild(panel);
 			var options = this.userOptions;
 			if(options.selected==index){
-				if(this.headers.length - 1){
-					this.select(Number(!index));
-					if(!index) options.selected = 0;
+				if(this.headers.length){
+					this.select(index-1>0 ? index - 1 : 0);
 				}else{
 					options.selected = null;
 				}
 			}else if(options.selected>index){
 				options.selected--;
 			}
-			var header = this.headers.splice(index, 1)[0];
-			var panel = this.panels.splice(index, 1)[0];
-			header.parentNode.removeChild(header);
-			panel.parentNode.removeChild(panel);
 			return this;
 		},
 		select: function(index){
 			var prevSelected = this.userOptions.selected;
-			if(index==prevSelected || index<0 || index>this.headers.length-1) return false;
+			if(index<0 || index>this.headers.length-1) return false;
 			$(this.headers[prevSelected]).removeClass('current');
 			$(this.headers[index]).addClass('current');
 			$(this.panels[prevSelected]).hide();
