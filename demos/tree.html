@@ -345,6 +345,13 @@ $('#my_tree').tree({
 		// alert('onClick');
 		return false;
 	},
+	onBeforeDrop: function(target, source, position){
+		// alert('Before Drop');
+		//return false;
+	},
+	onDrop: function(target, source, position){
+		// alert('Droped');
+	},
 	onContextmenu: function(e){
 		// alert('onContextmenu');
 		return false;
