@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Title</title>
+<link rel="icon" href="/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+<!-- <link rel="shortcut icon" href="./favicon.ico" /> -->
+<!-- <link rel="stylesheet" href="FF.css" /> -->
+<style type="text/css" media="all">
+* {padding:0;margin:0;}
+.accordion-container{border:1px solid #ccc;height:200px;width:200px;overflow:hidden;}
+.accordion-container li{float:left;width:100%;}
+.accordion-container .title{color:black;text-decoration:none;display:block;height:18px_height:20px;background:#e6e6e6;border-top:1px solid #ccc;border-bottom:1px solid #e6e6e6;}
+.accordion-container .selected{border-bottom:1px solid #ccc;}
+.accordion-container .panel{height:0;overflow:auto;_height:1px;_display:'none';}
+</style>
+</head>
+<body>
+<div id="page">
+    <div id="test">
+        <ul>
+            <li>
+                <a class="title" href="javascript:;">A</a>
+                <div class="panel">
+                    content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+                    content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+                    content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+                    content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+                </div>
+            </li>
+            <li>
+                <a class="title" href="javascript:;">B</a>
+                <div class="panel">
+                    content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+                    content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+                    content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+                    content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+                </div>
+            </li>
+            <li>
+                <a class="title" href="javascript:;">C</a>
+                <div class="panel">
+                    content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+                    content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+                    content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
+                </div>
+            </li>
+        </ul>
+    </div>
+</div><!-- #page end! -->
+<script type="text/javascript" src="../jquery.min.js"></script>
+<script type="text/javascript" src="../js/base.js"></script>
+<script type="text/javascript" src="../js/jquery.accordion.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+$('#test').accordion({
+	selected:1,
+	data:[],
+	fitContent:true
+});
+//]]>
+</script>
+</body>
+</html>

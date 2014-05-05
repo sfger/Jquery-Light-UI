@@ -22,16 +22,7 @@ $.fn.tabs=function(options){
 	var createElement = light.util.createElement;
 	options.renders = slice.call(this);
 	var handler = function(box, options){ return new handler.prototype.init(box, options); };
-	var list2Array = function(list){
-		var ret = [];
-		try{
-			ret = slice.call(list);
-		}catch(e){
-			for(var i=0,ii=list.length-1; i<=ii; i++)
-				ret.push(list[i]);
-		}
-		return ret;
-	};
+	var list2Array = light.util.list2Array;
 	handler.prototype = {
 		init: function(box, options){
 			this.render = box;

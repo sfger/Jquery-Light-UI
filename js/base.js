@@ -11,6 +11,16 @@ var light = {
 		push:Array.prototype.push,
 		toString:Object.prototype.toString,
 		hasOwnProperty:Object.prototype.hasOwnProperty,
+		list2Array:function(list){
+			var ret = [];
+			try{
+				ret = slice.call(list);
+			}catch(e){
+				for(var i=0,ii=list.length-1; i<=ii; i++)
+					ret.push(list[i]);
+			}
+			return ret;
+		},
 		getType:function(obj){ return light.ui.toString.call(obj).slice(8, -1); },
 		isWindow:function(obj){ return obj!=null && obj==obj.window; },
 		isPlainObject:function(obj){
