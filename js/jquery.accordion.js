@@ -29,11 +29,6 @@ $.fn.accordion=function(options){
 			var ul = box.children[0];
 			var len = 0;
 			if(ul.children && (len = ul.children.length)){
-				if(options.fitContent){
-					this.selectedAnimateHeight = box.offsetHeight - len * ul.children[0].offsetHeight;
-				}else{
-					this.selectedAnimateHeight = 'auto';
-				}
 				for(var i=0; i<len; i++){
 					this.titles.push(ul.children[i].children[0]);
 					if(i===options.selected){
@@ -42,6 +37,7 @@ $.fn.accordion=function(options){
 						if(document.documentMode<7) $spl.css({display:'block'});
 						$spl.prev().addClass('selected');
 						if(options.fitContent){
+							this.selectedAnimateHeight = box.offsetHeight - len * ul.children[0].offsetHeight;
 							$spl.css('height', this.selectedAnimateHeight);
 						}else{
 							$spl.css('height', 'auto');
@@ -57,15 +53,19 @@ $.fn.accordion=function(options){
 					spl && $(spl.parentNode.children[0]).removeClass('selected');
 					if(panel!=spl){
 						$(this).addClass('selected');
-						$(panel).animate({
-							height:that.selectedAnimateHeight
-						}, {
-							duration: 210,
-							start: function(){
-								if(document.documentMode<7)
-									$(this).css({display:'block', overflow:"auto"})
-							}
-						});
+						if(options.fitContent){
+							$(panel).animate({
+								height:that.selectedAnimateHeight
+							}, {
+								duration: 210,
+								start: function(){
+									if(document.documentMode<7)
+										$(this).css({display:'block', overflow:"auto"})
+								}
+							});
+						}else{
+							$(panel).css({display:'none', height:'auto'}).slideDown(210);
+						}
 						that.selectedPanel = panel;
 					}else{
 						that.selectedPanel = null;
