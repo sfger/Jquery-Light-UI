@@ -206,7 +206,7 @@ $.fn.datagrid=function(options){
 			this.columns = [];
 			this.frozenColumns = [];
 			this.userOptions = options;
-			this.container = box;
+			this.render = box;
 			var $box = $(box);
 			$box.addClass('datagrid-container clearfix');
 			$(get_table(options, that)).appendTo(box);
@@ -225,12 +225,12 @@ $.fn.datagrid=function(options){
 				};
 				$box.delegate('.head td', hover_binds).delegate('.body tr', hover_binds);
 			}
-			+function(){// css selector fix
+			(function(){// css selector fix
 				var fie = navigator.userAgent.match(/MSIE (\d*)/);
 				if(fie && fie[1]<9){
 					$('.view', box).eq(1).find('table, table td:first-child').css({borderLeft:'none'});
 				}
-			}();
+			})();
 			options.onCreate.bind(this)();
 			$(window).on('resize', function(){ that.resize(); });
 			$(window).resize();
@@ -280,24 +280,37 @@ $.fn.datagrid=function(options){
 				this.sort = fieldElement.field = field;
 				options.data.sort((fieldOption.sort || defaultSortFn).bind(fieldElement));
 			}
+			var frozenTrDoc = document.createDocumentFragment(),
+				trDoc = document.createDocumentFragment(),
+				frozenTbody = null,
+				tbody = null;
 			options.data.forEach(function(rowData, rowNum){
 				var frozenTr = rowData.frozenTr;
 				var tr = rowData.tr;
 				if(frozenTr){
-					frozenTr.parentNode.appendChild(frozenTr);
+					frozenTbody || (frozenTbody = frozenTr.parentNode);
+					frozenTrDoc.appendChild(frozenTr);
 					if(options.rowNum)
 						frozenTr.children[0].children[0].innerHTML = rowNum + 1;
 				}
 				if(tr){
-					tr.parentNode.appendChild(tr);
+					tbody || (tbody = tr.parentNode);
+					trDoc.appendChild(tr);
 				}
 			});
+			if(frozenTrDoc.children || frozenTrDoc.childNodes){
+				frozenTbody.appendChild(frozenTrDoc);
+			}
+			if(trDoc.children || trDoc.childNodes){
+				tbody.appendChild(trDoc);
+			}
+			frozenTrDoc = null, trDoc = null, frozenTbody = null, tbody = null;
 		},
 		resize: function(){
-			var dataViews = $('.view', this.container);
+			var dataViews = $('.view', this.render);
 			var tables = $('table', dataViews);
 			tables.eq(1).parent().css({height:tables.get(3).parentNode.clientHeight});
-			dataViews.eq(1).css({width: this.container.clientWidth - 1 - dataViews.get(0).offsetWidth});
+			dataViews.eq(1).css({width: this.render.clientWidth - 1 - dataViews.get(0).offsetWidth});
 		}
 	};
 	handler.prototype.init.prototype = handler.prototype;

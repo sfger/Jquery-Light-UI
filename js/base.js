@@ -12,7 +12,7 @@ var light = {
 		toString:Object.prototype.toString,
 		hasOwnProperty:Object.prototype.hasOwnProperty,
 		list2Array:function(list){
-			var ret = [];
+			var ret = [], slice = light.util.slice;
 			try{
 				ret = slice.call(list);
 			}catch(e){
