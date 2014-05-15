@@ -11,11 +11,12 @@
 <!-- <link rel="stylesheet" href="FF.css" /> -->
 <style type="text/css" media="all">
 * {padding:0;margin:0;}
-.accordion-container{border:1px solid #ccc;height:200px;width:200px;overflow:hidden;}
+.accordion-container{border:1px solid #ccc;height:auto/*100%*/;width:200px;overflow:hidden;}
 .accordion-container li{float:left;width:100%;}
-.accordion-container .title{color:black;text-decoration:none;display:block;height:18px_height:20px;background:#e6e6e6;border-top:1px solid #ccc;border-bottom:1px solid #e6e6e6;}
+.accordion-container .title{color:black;text-decoration:none;display:block;height:18px_height:20px;background:#e6e6e6;border-top:1px solid #ccc;border-bottom:1px solid #e6e6e6;line-height:26px;}
 .accordion-container .selected{border-bottom:1px solid #ccc;}
 .accordion-container .panel{height:0;overflow:auto;_height:1px;_display:'none';}
+#page{height:400px;}
 </style>
 </head>
 <body>
@@ -59,7 +60,7 @@
 $('#test').accordion({
 	selected:1,
 	data:[],
-	fitContent:true
+	//fitContent:true
 });
 //]]>
 </script>

@@ -10,7 +10,6 @@ $.fn.accordion=function(options){
 		return iAccordions;
 	}
 	options = $.extend(true, {
-		animate: {time:0},
 		data: []
 	}, options);
 	var handler = function(box, options){ return new handler.prototype.init(box, options); };
