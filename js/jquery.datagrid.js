@@ -112,7 +112,7 @@ $.fn.datagrid=function(options){
 					name:'div', attr:{className:'body-wrapper', style:'overflow:hidden;'}, children:{
 						name:'table', attr:{className:'frozen body'}, children:{
 							name:'tbody', children:
-								get_data_rows(data, that.frozenColumns, true)
+								get_data_rows(options.data, that.frozenColumns, true)
 						}
 					}
 				}
@@ -129,7 +129,7 @@ $.fn.datagrid=function(options){
 					name:'div', attr:{className: 'body-wrapper'}, children:{
 						name:'table', attr:{className: 'body'}, children:{
 							name:'tbody', children:
-								get_data_rows(data, that.columns)
+								get_data_rows(options.data, that.columns)
 						}
 					}
 				}]
@@ -209,7 +209,18 @@ $.fn.datagrid=function(options){
 			this.render = box;
 			var $box = $(box);
 			$box.addClass('datagrid-container clearfix');
-			$(get_table(options, that)).appendTo(box);
+			if(options.pagination && options.localData){
+				box.innerHTML = '<div class="datagrid-pagination"></div>';
+				var pbox = $('.datagrid-pagination', box).get(0);
+				options.pagination.renders = [pbox];
+				options.pagination.dataSize = options.localData.length;
+				pagination(options.pagination);
+				var po = pbox.ui.iPagination.userOptions;
+				console.log((po.pageNumber-1)*po.pageSize);
+				console.log(po.pageSize);
+				options.data = options.localData.slice((po.pageNumber-1)*po.pageSize, po.pageNumber*po.pageSize);
+			}
+			$(get_table(options, that)).prependTo(box);
 			this.fieldElements = $('.field .cell', box);
 			adjust_table($('table', box), that);
 
@@ -256,6 +267,7 @@ $.fn.datagrid=function(options){
 					that.sortBy(field, that.sort!==field ? that.defaultOrder : !that.order);
 				}
 			});
+
 			if(options.remoteSort || options.sort){
 				if(options.remoteSort){
 					var fieldIndex = (function(){
@@ -272,6 +284,12 @@ $.fn.datagrid=function(options){
 			}
 		},
 		sortBy: function(field, order){ //order: (true||'desc')->desc, (false||not 'desc')->asc
+			order = (function(){
+				if(order === 'desc') return true;
+				if(order === 'asc') return false;
+				if(order === true) return true;
+				return false;
+			})();
 			var options = this.userOptions;
 			var fieldIndex;
 			var fieldOption = this.allColumns.filter(function(option, i){
@@ -284,15 +302,14 @@ $.fn.datagrid=function(options){
 			var fieldElement = this.fieldElements[fieldIndex].parentNode;
 			if(this.sort) $('.sort-mark', this.sort.parentNode).html(markChars.empty);
 			$('.sort-mark', fieldElement).html(order?markChars.down:markChars.up)
-			if(this.sort===fieldElement.field && fieldElement.order===order)
-				return false;
+			if(this.sort===fieldElement.field && fieldElement.order===order) return false;
 			this.order = fieldElement.order = order;
 			if(this.sort===fieldOption.field && fieldElement.order===!this.defaultOrder){
 				this.sort = fieldElement.field = field;
 				options.data = options.data.reverse();
 			}else{
 				this.sort = fieldElement.field = field;
-				options.data.sort((fieldOption.sort || defaultSortFn).bind(fieldElement));
+				options.data.sort((fieldOption.sort || defaultSortFn).bind({field:field, order:order}));
 			}
 			var frozenTrDoc = document.createDocumentFragment(),
 				trDoc = document.createDocumentFragment(),

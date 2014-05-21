@@ -146,8 +146,10 @@
 			return pagination;
 		})();
 		for(var i=0; i<options.renders.length; i++){
-			options.render = options.renders[i];
-			pagination(options);
+			//options.render = options.renders[i];
+			options.renders[i].ui = {
+				iPagination:pagination(light.util.extend(true, {render:options.renders[i]}, options))
+			};
 		}
     };
     return window.pagination = pagination;
