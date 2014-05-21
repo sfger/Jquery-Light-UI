@@ -256,8 +256,22 @@ $.fn.datagrid=function(options){
 					that.sortBy(field, that.sort!==field ? that.defaultOrder : !that.order);
 				}
 			});
+			if(options.remoteSort || options.sort){
+				if(options.remoteSort){
+					var fieldIndex = (function(){
+						for(var i in that.allColumns){
+							if(options.sort.field===that.allColumns[i].field){
+								return i + 1;
+							}
+						}
+					})();
+					$('.sort-mark', this.fieldElements[fieldIndex]).html(light.ui.markChars[options.sort.order=='desc'? 'down' : 'up']);
+				}else{
+					this.sortBy(options.sort.field, options.sort.order==='desc');
+				}
+			}
 		},
-		sortBy: function(field, order){ //order: true->desc, false->asc
+		sortBy: function(field, order){ //order: (true||'desc')->desc, (false||not 'desc')->asc
 			var options = this.userOptions;
 			var fieldIndex;
 			var fieldOption = this.allColumns.filter(function(option, i){
@@ -288,13 +302,19 @@ $.fn.datagrid=function(options){
 				var frozenTr = rowData.frozenTr;
 				var tr = rowData.tr;
 				if(frozenTr){
-					frozenTbody || (frozenTbody = frozenTr.parentNode);
+					frozenTbody || (function(){
+						frozenTbody = frozenTr.parentNode;
+						frozenTbody.style.display = 'none';
+					})();
 					frozenTrDoc.appendChild(frozenTr);
 					if(options.rowNum)
 						frozenTr.children[0].children[0].innerHTML = rowNum + 1;
 				}
 				if(tr){
-					tbody || (tbody = tr.parentNode);
+					tbody || (function(){
+						tbody = tr.parentNode;
+						tbody.style.display = 'none';
+					})();
 					trDoc.appendChild(tr);
 				}
 			});
@@ -304,6 +324,8 @@ $.fn.datagrid=function(options){
 			if(trDoc.children || trDoc.childNodes){
 				tbody.appendChild(trDoc);
 			}
+			frozenTbody.style.display = '';
+			tbody.style.display = '';
 			frozenTrDoc = null, trDoc = null, frozenTbody = null, tbody = null;
 		},
 		resize: function(){
