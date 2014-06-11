@@ -7,21 +7,19 @@
 <title>Title</title>
 <link rel="icon" href="/favicon.ico" type="image/x-icon" />
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-<!-- <link rel="shortcut icon" href="./favicon.ico" /> -->
-<!-- <link rel="stylesheet" href="FF.css" /> -->
 <style type="text/css" media="all">
 *{padding:0;margin:0;}
-.drag-container{cursor:move;display:block;text-decoration:none;}
+.drag-container{cursor:move;display:inline-block;*zoom:1;text-decoration:none;}
 .drop{width:300px;height:200px;background:#ff0000;padding:5px;border:2px solid #000;}
 #item{width:100px;height:100px;background:#ffff00;padding:5px;border:1px dashed #000;text-decoration:none;}
 </style>
 </head>
 <body>
 <div id="page">
-    <div id="item">
-        <a href="http://www.baidu.com" target="_blank">BaiDu</a>
-    </div>
     <div id="drop" class="drop"></div>
+    <div id="item">
+        <a href="http://www.baidu.com" target="_blank">Test</a>
+    </div>
 </div>
 </body>
 <script type="text/javascript" src="../js/base.js"></script>
@@ -74,6 +72,7 @@ Event.on('load', window, function(e){
             };
         }
         e.dataTransfer.effectAllowed = 'copy'
+		if(e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(e.target, 0, e.target.offsetHeight/2);
         e.dataTransfer.setData('Text', item.id)
     });
     Event.on('drag', item.parentNode, function(e){
@@ -87,7 +86,7 @@ Event.on('load', window, function(e){
             // item.proxy.style.left = e.clientX + item.dragPosition.x;
             // item.proxy.style.top = e.clientY + item.dragPosition.y;
             item.proxy.style.left = e.clientX + 1;
-            item.proxy.style.top = e.clientY + 1;
+            item.proxy.style.top = e.clientY - e.srcElement.offsetHeight/2;
         }
     });
 });

@@ -14,13 +14,11 @@ $.fn.datagrid=function(options){
 		startRowNum:1,
 		data:[]
 	}, options);
-	var handler = function(box, options){
-		return new handler.prototype.init(box, options);
-	};
-	var markChars = light.ui.markChars;
-	var push = light.util.push;
-	var toString = light.util.toString;
-	var getType = light.util.getType;
+	var handler       = function(box, options){ return new handler.prototype.init(box, options); };
+	var markChars     = light.ui.markChars;
+	var push          = light.util.push;
+	var toString      = light.util.toString;
+	var getType       = light.util.getType;
 	var createElement = light.util.createElement;
 	// fn get_table{{{
 	var get_table = function(options, that){
@@ -216,8 +214,6 @@ $.fn.datagrid=function(options){
 				options.pagination.dataSize = options.localData.length;
 				pagination(options.pagination);
 				var po = pbox.ui.iPagination.userOptions;
-				console.log((po.pageNumber-1)*po.pageSize);
-				console.log(po.pageSize);
 				options.data = options.localData.slice((po.pageNumber-1)*po.pageSize, po.pageNumber*po.pageSize);
 			}
 			$(get_table(options, that)).prependTo(box);
