@@ -160,9 +160,13 @@
                 return this.set_current_date( this.php_date($year+"-m-d H:i:s") );
                 break;
             case 'm':
-                var $tmonth = parseInt(Number(this.php_date('Y'))*12) + parseInt(this.php_date('n')) + parseInt($offset);
+                var $tmonth = parseInt(this.php_date('Y'), 10)*12 + parseInt(this.php_date('n'), 10) + parseInt($offset, 10);
                 $year = Math.floor($tmonth / 12);
                 var $month = Math.floor($tmonth % 12);
+				if($month===0){
+					$year -= 1;
+					$month = 12;
+				}
                 if($month<10) $month = '0' + String($month);
                 var $other  = this.php_date('d H:i:s');
                 this.set_current_date($year+'-'+$month+'-'+$other);
