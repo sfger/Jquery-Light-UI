@@ -370,7 +370,7 @@
                 click: function(){
                     that.value = date_helper(that.ui.skipdate).get_first_date_of_month().get_offset_date($(this).closest('.l-item').index(), 'm').get_offset_date(Number(this.innerHTML - 1)).current_date;
                     $(that.ui.renderTo).hide();
-                    op.onComplete.call(that, that.value);
+					op.onComplete && op.onComplete.call(that, that.value);
                 }
             }, '.wd li:not(".disabled")').on({
                 mouseenter: function(){
