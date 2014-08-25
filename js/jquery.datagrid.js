@@ -180,7 +180,7 @@ $.fn.datagrid=function(options){
 			if(options.rowNum || options.frozenColumns)
 				align_table($([tables[0], tables[2]]), $([tables[1], tables[3]]), 'width', that.fieldElements);
 
-			var width_full = document.compatMode === "CSS1Compat" ? 'auto' : '100%';
+			var width_full = (document.compatMode === "CSS1Compat"&&!/msie 6/i.test(navigator.userAgent)) ? 'auto' : '100%';
 			tp1.css({width:width_full});
 			tp0.parent().css({width:width_full, overflow:'hidden'});
 			$(tp1).on('scroll', function(){
