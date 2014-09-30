@@ -18,20 +18,21 @@ $.fn.window=function(options){
 	handler.prototype = {
 		init: function(box, options){
 			var $box = $(box);
-			var w = $( '<div class="window-container">' +
-				'<div class="window-wrapper clearfix">' +
-					'<div class="window-bar header clearfix">' +
-						'<a href="javascript:;" class="closer">×</a>' +
-						'<span class="title">'+(options.title||'')+'</span>' +
-					'</div>' +
-					'<div class="contents"></div>' +
-					(options.footer.formatter ? (function(){
-						return '<div class="window-bar footer clearfix">' +
-							options.footer.formatter() +
-							'</div>';
-					})() : '') +
-				'</div>' +
-			'</div>' ).appendTo(document.body);
+			var footer = options.footer.formatter ?
+							'<div class="window-bar footer clearfix">' + options.footer.formatter() + '</div>'
+							: '';
+			var ctn = '\
+<div class="window-container">\
+	<div class="window-mask"></div>\
+	<div class="window-wrapper clearfix">\
+		<div class="window-bar header clearfix">\
+			<span class="title">' + (options.title||'') + '</span>\
+			<a href="javascript:;" class="closer">×</a>\
+		</div>\
+		<div class="contents"></div>' + footer + '\
+	</div>\
+</div>';
+			var w = $(ctn.replace(/>\s+</g, '><')).appendTo(document.body);
 			this.userOptions = options;
 			this.container   = w.get(0);
 			this.render		 = box;
@@ -53,14 +54,8 @@ $.fn.window=function(options){
 					return e['offset'+one];
 				};
 			});
-			// if(isIE6) document.documentElement.style.overflowY = 'scroll';
 
-			$(window).resize(function(){that.resize()});
-			// if(isIE6 || !css1compat){
-			// 	$(window).scroll(function(){
-			// 		$(window).resize();
-			// 	});
-			// }
+			$(window).resize(function(){that.resize();});
 			$(this.closer).on('click', function(e){
 				that.close();
 				e.preventDefault();
@@ -72,6 +67,7 @@ $.fn.window=function(options){
 		show: function(){
 			var html = document.documentElement;
 			var body = document.body;
+			body.children[0].style.width = body.children[0].offsetWidth + 'px';
 			var $container = $(this.container),
 				$contents  = $(this.contents),
 				wraper     = this.wraper;
@@ -129,6 +125,7 @@ $.fn.window=function(options){
 			if( options.onBeforeClose
 				&& typeof options.onClose==='function'
 				&& !options.onBeforeClose() ) return false;
+			document.body.children[0].style.width = 'auto';
 			this.container.style.display = 'none';
 			$([document.documentElement, document.body]).css({overflow:''});
 			if(options.onClose && typeof options.onClose==='function') options.onClose();
@@ -139,9 +136,7 @@ $.fn.window=function(options){
 	return this.each(function(){
 		this.ui = {
 			iWindow: handler(this, $.extend({}, options))
-		}
+		};
 	});
-	// return handler(this, options);
 };
 })(jQuery);
-/* vim: set fdm=marker: */

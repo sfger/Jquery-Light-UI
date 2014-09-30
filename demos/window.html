@@ -8,7 +8,8 @@
 <link rel="icon" href="/favicon.ico" type="image/x-icon" />
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 <style type="text/css" media="all">
-*{padding:0;margin:0;font-size:12px;}
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,hr,pre,code,form,fieldset,legend,input,button,textarea,p,blockquote,th,td{margin:0;padding:0;}
+html,button,input,select,textarea{font:14px/18px \5b8b\4f53,"Microsoft YaHei";color:#000;}
 .clearfix:before, .clearfix:after{content:"";display:table;}
 .clearfix:after{clear:both;overflow:hidden;}
 .clearfix{*zoom:1;}
@@ -19,9 +20,10 @@ input.btn, button.btn{*line-height:0.8;}
 .btn-success{background-color:green;color:white;}
 .btn-success:active{background-image:none;color:#cacaca;}
 
-.window-container{display:none;position:fixed;z-index:50;top:0;left:0;background:black;opacity:0.72;filter:alpha(opacity=72);}
+.window-container{display:none;position:fixed;z-index:50;top:0;left:0;}
+.window-mask{height:100%;width:100%;background:#565656;opacity:0.72;filter:alpha(opacity=72);}
 .window-wrapper{width:400px;height:260px;overflow:hidden;position:absolute;margin:auto;background:white;/*box-shadow:3px 3px 3px #defefe;*/}
-.window-container .window-bar{background:#b6b6b6;padding:2px 2px;}
+.window-container .window-bar{background:#b6b6b6;padding:2px 4px;}
 .window-container .closer{float:right;color:black;font-weight:bold;;text-decoration:none;transition:all 0.5s ease-out 0s;font-family:宋体;padding:0;border:none;}
 .window-container .closer:hover{transform:rotate(360deg);-webkit-transform:rotate(360deg);background:none;border:none;}
 .window-container .closer:active{box-shadow:none;}
@@ -29,6 +31,7 @@ input.btn, button.btn{*line-height:0.8;}
 .window-container .header{line-height:2;}
 .window-container .footer{text-align:right;}
 input{*filter:chroma(color=black);}
+#page{height:9000px;background:red;}
 </style>
 </head>
 <body>
@@ -42,7 +45,7 @@ input{*filter:chroma(color=black);}
 		content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
 		content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br /> content<br />
 	</div>
-</div><!-- #page end! -->
+</div>
 <script type="text/javascript" src="../jquery.min.js"></script>
 <script type="text/javascript" src="../js/jquery.window.js"></script>
 <script type="text/javascript">
